@@ -5,6 +5,7 @@ import {
   GenerateArticleRequestSchema, // Keep for z.infer on response or if needed elsewhere
   GenerateArticleResponseSchema,
 } from '../../schemas/geminiSchemas';
+import { GoogleGenAI } from '@google/genai';
 
 // This is a skeleton handler. Implement the actual Gemini API call here.
 export const generateArticleHandler = async (
@@ -18,7 +19,7 @@ export const generateArticleHandler = async (
   // processes the request. We cast c.req.valid('json') to the expected type.
   // Workaround for persistent 'assignable to never' error on c.req.valid('json')
   const validatedBody = (c.req as any).valid('json') as z.infer<typeof GenerateArticleRequestSchema>;
-  
+
   // Ensure validatedBody is not undefined if the cast is too optimistic
   // or if middleware didn't run as expected (though zValidator throws on error)
   if (!validatedBody) {
@@ -26,12 +27,31 @@ export const generateArticleHandler = async (
     // or by more robust error handling if the middleware setup is complex.
     return c.json({ error: 'Invalid request body' }, 400);
   }
-  
+
   const { prompt } = validatedBody;
+
+  // Check if GEMINI_API_KEY is set.
+  if (!process.env.GEMINI_API_KEY) {
+    return c.json({ error: 'GEMINI_API_KEY is not configured' }, 500);
+  }
+
+  const genAI = new GoogleGenAI({
+    apiKey: process.env.GEMINI_API_KEY,
+  });
+
+  const aiResponse = await genAI.models.generateContent({
+    model: "gemini-2.0-flash",
+    contents: prompt,
+  });
+
 
   // Simulate Gemini API call or other heavy computation
   console.log(`Received prompt for content generation: "${prompt}"`);
-  const generatedText = `This is a placeholder generated response for the prompt: "${prompt}"`;
+  const generatedText = aiResponse.text;
+
+  if (!generatedText) {
+    return c.json({ error: 'Failed to generate content' }, 500);
+  }
 
   // Return response conforming to GenerateArticleResponseSchema
   const response: z.infer<typeof GenerateArticleResponseSchema> = {
