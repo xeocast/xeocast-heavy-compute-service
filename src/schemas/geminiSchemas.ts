@@ -171,6 +171,22 @@ export const generateNewsTitlesRoute = createRoute({
   tags: ['Gemini'],
 });
 
+// --- Specific Schemas for GenerateArticleMetadata ---
+export const GenerateArticleMetadataRequestSchema = z.object({
+  prompt: z.string().min(1, { message: 'Prompt cannot be empty' }),
+  article: z.string().min(1, { message: 'Article content cannot be empty' }),
+}).openapi('GenerateArticleMetadataRequest');
+
+export const GenerateArticleMetadataResponseSchema = z.object({
+  result: z.object({
+    description: z.string(),
+    tags: z.array(z.string()),
+    thumbnailPrompt: z.string(),
+    articleImagePrompt: z.string(),
+  }),
+  status: z.string(),
+}).openapi('GenerateArticleMetadataResponse');
+
 // POST /gemini/generate-series-titles
 export const generateSeriesTitlesRoute = createRoute({
   method: 'post',
@@ -211,17 +227,17 @@ export const generateArticleMetadataRoute = createRoute({
     body: {
       content: {
         'application/json': {
-          schema: BaseGeminiRequestSchema, // Assuming a prompt is needed
+          schema: GenerateArticleMetadataRequestSchema,
         },
       },
-      description: 'Prompt for generating article metadata',
+      description: 'Prompt and article for generating article metadata',
     },
   },
   responses: {
     200: {
       content: {
         'application/json': {
-          schema: BaseGeminiResponseSchema, // Placeholder, metadata might have a more complex structure
+          schema: GenerateArticleMetadataResponseSchema,
         },
       },
       description: 'Article metadata generated successfully',

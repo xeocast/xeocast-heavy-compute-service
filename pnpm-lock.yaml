@@ -19,10 +19,10 @@ importers:
         version: 0.5.1(hono@4.7.10)
       '@hono/zod-openapi':
         specifier: ^0.19.7
-        version: 0.19.7(hono@4.7.10)(zod@3.25.35)
+        version: 0.19.7(hono@4.7.10)(zod@3.25.36)
       '@hono/zod-validator':
         specifier: ^0.6.0
-        version: 0.6.0(hono@4.7.10)(zod@3.25.35)
+        version: 0.6.0(hono@4.7.10)(zod@3.25.36)
       bcryptjs:
         specifier: ^3.0.2
         version: 3.0.2
@@ -37,7 +37,7 @@ importers:
         version: 4.0.7
       zod:
         specifier: ^3.25.35
-        version: 3.25.35
+        version: 3.25.36
     devDependencies:
       '@types/node':
         specifier: ^22.15.24
@@ -617,15 +617,15 @@ packages:
     peerDependencies:
       zod: ^3.24.1
 
-  zod@3.25.35:
-    resolution: {integrity: sha512-Fe0Tz/mSbIraMd1/RR1jbtPMsrzX/SNwCmEpRqB0xB2YBnoRfQqyu4aIqWKWrx9C2XjF4SY47IVIt30+RVGSsw==}
+  zod@3.25.36:
+    resolution: {integrity: sha512-eRFS3i8T0IrpGdL8HQyqFAugGOn7jOjyGgGdtv5NY4Wkhi7lJDk732bNZ609YMIGFbLoaj6J69O1Mura23gfIw==}
 
 snapshots:
 
-  '@asteasolutions/zod-to-openapi@7.3.2(zod@3.25.35)':
+  '@asteasolutions/zod-to-openapi@7.3.2(zod@3.25.36)':
     dependencies:
       openapi3-ts: 4.4.0
-      zod: 3.25.35
+      zod: 3.25.36
 
   '@cspotcode/source-map-support@0.8.1':
     dependencies:
@@ -636,8 +636,8 @@ snapshots:
       '@modelcontextprotocol/sdk': 1.12.1
       google-auth-library: 9.15.1
       ws: 8.18.2
-      zod: 3.25.35
-      zod-to-json-schema: 3.24.5(zod@3.25.35)
+      zod: 3.25.36
+      zod-to-json-schema: 3.24.5(zod@3.25.36)
     transitivePeerDependencies:
       - bufferutil
       - encoding
@@ -652,17 +652,17 @@ snapshots:
     dependencies:
       hono: 4.7.10
 
-  '@hono/zod-openapi@0.19.7(hono@4.7.10)(zod@3.25.35)':
+  '@hono/zod-openapi@0.19.7(hono@4.7.10)(zod@3.25.36)':
     dependencies:
-      '@asteasolutions/zod-to-openapi': 7.3.2(zod@3.25.35)
-      '@hono/zod-validator': 0.6.0(hono@4.7.10)(zod@3.25.35)
+      '@asteasolutions/zod-to-openapi': 7.3.2(zod@3.25.36)
+      '@hono/zod-validator': 0.6.0(hono@4.7.10)(zod@3.25.36)
       hono: 4.7.10
-      zod: 3.25.35
+      zod: 3.25.36
 
-  '@hono/zod-validator@0.6.0(hono@4.7.10)(zod@3.25.35)':
+  '@hono/zod-validator@0.6.0(hono@4.7.10)(zod@3.25.36)':
     dependencies:
       hono: 4.7.10
-      zod: 3.25.35
+      zod: 3.25.36
 
   '@jridgewell/resolve-uri@3.1.2': {}
 
@@ -684,8 +684,8 @@ snapshots:
       express-rate-limit: 7.5.0(express@5.1.0)
       pkce-challenge: 5.0.0
       raw-body: 3.0.0
-      zod: 3.25.35
-      zod-to-json-schema: 3.24.5(zod@3.25.35)
+      zod: 3.25.36
+      zod-to-json-schema: 3.24.5(zod@3.25.36)
     transitivePeerDependencies:
       - supports-color
 
@@ -1205,8 +1205,8 @@ snapshots:
 
   yn@3.1.1: {}
 
-  zod-to-json-schema@3.24.5(zod@3.25.35):
+  zod-to-json-schema@3.24.5(zod@3.25.36):
     dependencies:
-      zod: 3.25.35
+      zod: 3.25.36
 
-  zod@3.25.35: {}
+  zod@3.25.36: {}

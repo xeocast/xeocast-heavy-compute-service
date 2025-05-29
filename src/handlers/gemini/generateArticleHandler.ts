@@ -45,8 +45,6 @@ export const generateArticleHandler = async (
   });
 
 
-  // Simulate Gemini API call or other heavy computation
-  console.log(`Received prompt for content generation: "${prompt}"`);
   const generatedText = aiResponse.text;
 
   if (!generatedText) {
