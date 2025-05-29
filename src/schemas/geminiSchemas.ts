@@ -1,27 +1,28 @@
 import { z } from 'zod';
 import { createRoute } from '@hono/zod-openapi';
 
-export const GenerateContentRequestSchema = z.object({
+export const GenerateArticleRequestSchema = z.object({
   prompt: z.string().min(1, { message: 'Prompt cannot be empty' }),
-}).openapi('GenerateContentRequest');
+}).openapi('GenerateArticleRequest');
 
-export const GenerateContentResponseSchema = z.object({
+export const GenerateArticleResponseSchema = z.object({
   generatedText: z.string(),
   status: z.string(),
-}).openapi('GenerateContentResponse');
+}).openapi('GenerateArticleResponse');
 
 export const ErrorSchema = z.object({
   error: z.string(),
 }).openapi('Error');
 
-export const generateContentRoute = createRoute({
+// /gemini/generate-article
+export const generateArticleRoute = createRoute({
   method: 'post',
-  path: '/gemini/generate-content',
+  path: '/generate-article',
   request: {
     body: {
       content: {
         'application/json': {
-          schema: GenerateContentRequestSchema,
+          schema: GenerateArticleRequestSchema,
         },
       },
       description: 'Prompt for content generation',
@@ -31,7 +32,7 @@ export const generateContentRoute = createRoute({
     200: {
       content: {
         'application/json': {
-          schema: GenerateContentResponseSchema,
+          schema: GenerateArticleResponseSchema,
         },
       },
       description: 'Content generated successfully',
@@ -69,6 +70,363 @@ export const generateContentRoute = createRoute({
       },
     },
   },
-  summary: 'Generate content using a prompt',
+  summary: 'Generate an article using a prompt',
   tags: ['Gemini'],
 });
+
+// --- Base Schemas for new Gemini Endpoints ---
+export const BaseGeminiRequestSchema = z.object({
+  prompt: z.string().min(1, { message: 'Prompt cannot be empty' }),
+}).openapi('BaseGeminiRequest');
+
+export const BaseGeminiResponseSchema = z.object({
+  result: z.string(), // Generic result field
+  status: z.string(),
+}).openapi('BaseGeminiResponse');
+
+// Specific Schemas for certain Gemini Endpoints
+export const GeneratePodcastAudioRequestSchema = z.object({ 
+  script: z.string().min(1, { message: 'Script cannot be empty' }),
+}).openapi('GeneratePodcastAudioRequest');
+
+export const GeneratePodcastAudioResponseSchema = z.object({
+  audioUrl: z.string().url({ message: 'Invalid URL format for audioUrl' }),
+  status: z.string(),
+}).openapi('GeneratePodcastAudioResponse');
+
+export const GenerateImageResponseSchema = z.object({
+  imageUrl: z.string().url({ message: 'Invalid URL format for imageUrl' }),
+  status: z.string(),
+}).openapi('GenerateImageResponse');
+
+export const GenerateMusicResponseSchema = z.object({
+  audioUrl: z.string().url({ message: 'Invalid URL format for audioUrl' }), 
+  status: z.string(),
+}).openapi('GenerateMusicResponse');
+
+
+// --- Route Definitions for New Gemini Endpoints ---
+
+// POST /gemini/generate-evergreen-titles
+export const generateEvergreenTitlesRoute = createRoute({
+  method: 'post',
+  path: '/generate-evergreen-titles',
+  request: {
+    body: {
+      content: {
+        'application/json': {
+          schema: BaseGeminiRequestSchema,
+        },
+      },
+      description: 'Prompt for generating evergreen titles',
+    },
+  },
+  responses: {
+    200: {
+      content: {
+        'application/json': {
+          schema: BaseGeminiResponseSchema,
+        },
+      },
+      description: 'Evergreen titles generated successfully',
+    },
+    400: { description: 'Bad Request', content: { 'application/json': { schema: ErrorSchema } } },
+    401: { description: 'Unauthorized', content: { 'application/json': { schema: ErrorSchema } } },
+    403: { description: 'Forbidden', content: { 'application/json': { schema: ErrorSchema } } },
+    500: { description: 'Internal Server Error', content: { 'application/json': { schema: ErrorSchema } } },
+  },
+  summary: 'Generate evergreen titles',
+  tags: ['Gemini'],
+});
+
+// POST /gemini/generate-news-titles
+export const generateNewsTitlesRoute = createRoute({
+  method: 'post',
+  path: '/generate-news-titles',
+  request: {
+    body: {
+      content: {
+        'application/json': {
+          schema: BaseGeminiRequestSchema,
+        },
+      },
+      description: 'Prompt for generating news titles',
+    },
+  },
+  responses: {
+    200: {
+      content: {
+        'application/json': {
+          schema: BaseGeminiResponseSchema,
+        },
+      },
+      description: 'News titles generated successfully',
+    },
+    400: { description: 'Bad Request', content: { 'application/json': { schema: ErrorSchema } } },
+    401: { description: 'Unauthorized', content: { 'application/json': { schema: ErrorSchema } } },
+    403: { description: 'Forbidden', content: { 'application/json': { schema: ErrorSchema } } },
+    500: { description: 'Internal Server Error', content: { 'application/json': { schema: ErrorSchema } } },
+  },
+  summary: 'Generate news titles',
+  tags: ['Gemini'],
+});
+
+// POST /gemini/generate-series-titles
+export const generateSeriesTitlesRoute = createRoute({
+  method: 'post',
+  path: '/generate-series-titles',
+  request: {
+    body: {
+      content: {
+        'application/json': {
+          schema: BaseGeminiRequestSchema,
+        },
+      },
+      description: 'Prompt for generating series titles',
+    },
+  },
+  responses: {
+    200: {
+      content: {
+        'application/json': {
+          schema: BaseGeminiResponseSchema,
+        },
+      },
+      description: 'Series titles generated successfully',
+    },
+    400: { description: 'Bad Request', content: { 'application/json': { schema: ErrorSchema } } },
+    401: { description: 'Unauthorized', content: { 'application/json': { schema: ErrorSchema } } },
+    403: { description: 'Forbidden', content: { 'application/json': { schema: ErrorSchema } } },
+    500: { description: 'Internal Server Error', content: { 'application/json': { schema: ErrorSchema } } },
+  },
+  summary: 'Generate series titles',
+  tags: ['Gemini'],
+});
+
+// POST /gemini/generate-article-metadata
+export const generateArticleMetadataRoute = createRoute({
+  method: 'post',
+  path: '/generate-article-metadata',
+  request: {
+    body: {
+      content: {
+        'application/json': {
+          schema: BaseGeminiRequestSchema, // Assuming a prompt is needed
+        },
+      },
+      description: 'Prompt for generating article metadata',
+    },
+  },
+  responses: {
+    200: {
+      content: {
+        'application/json': {
+          schema: BaseGeminiResponseSchema, // Placeholder, metadata might have a more complex structure
+        },
+      },
+      description: 'Article metadata generated successfully',
+    },
+    400: { description: 'Bad Request', content: { 'application/json': { schema: ErrorSchema } } },
+    401: { description: 'Unauthorized', content: { 'application/json': { schema: ErrorSchema } } },
+    403: { description: 'Forbidden', content: { 'application/json': { schema: ErrorSchema } } },
+    500: { description: 'Internal Server Error', content: { 'application/json': { schema: ErrorSchema } } },
+  },
+  summary: 'Generate article metadata',
+  tags: ['Gemini'],
+});
+
+// POST /gemini/generate-podcast-script
+export const generatePodcastScriptRoute = createRoute({
+  method: 'post',
+  path: '/generate-podcast-script',
+  request: {
+    body: {
+      content: {
+        'application/json': {
+          schema: BaseGeminiRequestSchema,
+        },
+      },
+      description: 'Prompt for generating a podcast script',
+    },
+  },
+  responses: {
+    200: {
+      content: {
+        'application/json': {
+          schema: BaseGeminiResponseSchema, // Response might be a longer text or structured script
+        },
+      },
+      description: 'Podcast script generated successfully',
+    },
+    400: { description: 'Bad Request', content: { 'application/json': { schema: ErrorSchema } } },
+    401: { description: 'Unauthorized', content: { 'application/json': { schema: ErrorSchema } } },
+    403: { description: 'Forbidden', content: { 'application/json': { schema: ErrorSchema } } },
+    500: { description: 'Internal Server Error', content: { 'application/json': { schema: ErrorSchema } } },
+  },
+  summary: 'Generate a podcast script',
+  tags: ['Gemini'],
+});
+
+// POST /gemini/generate-podcast-audio
+export const generatePodcastAudioRoute = createRoute({
+  method: 'post',
+  path: '/generate-podcast-audio',
+  request: {
+    body: {
+      content: {
+        'application/json': {
+          // Input might be a script text or a prompt for TTS
+          schema: GeneratePodcastAudioRequestSchema, 
+        },
+      },
+      description: 'Script or prompt for generating podcast audio',
+    },
+  },
+  responses: {
+    200: {
+      content: {
+        // Response might be a URL to an audio file or binary data
+        'application/json': { 
+          schema: GeneratePodcastAudioResponseSchema,
+        },
+        // Or 'audio/mpeg': { schema: { type: 'string', format: 'binary' } } for direct binary response
+      },
+      description: 'Podcast audio generated successfully',
+    },
+    400: { description: 'Bad Request', content: { 'application/json': { schema: ErrorSchema } } },
+    401: { description: 'Unauthorized', content: { 'application/json': { schema: ErrorSchema } } },
+    403: { description: 'Forbidden', content: { 'application/json': { schema: ErrorSchema } } },
+    500: { description: 'Internal Server Error', content: { 'application/json': { schema: ErrorSchema } } },
+  },
+  summary: 'Generate podcast audio from script',
+  tags: ['Gemini'],
+});
+
+// POST /gemini/generate-thumbnail-image
+export const generateThumbnailImageRoute = createRoute({
+  method: 'post',
+  path: '/generate-thumbnail-image',
+  request: {
+    body: {
+      content: {
+        'application/json': {
+          schema: BaseGeminiRequestSchema, // Prompt for image generation
+        },
+      },
+      description: 'Prompt for generating a thumbnail image',
+    },
+  },
+  responses: {
+    200: {
+      content: {
+        'application/json': { 
+          schema: GenerateImageResponseSchema,
+        },
+      },
+      description: 'Thumbnail image generated successfully',
+    },
+    400: { description: 'Bad Request', content: { 'application/json': { schema: ErrorSchema } } },
+    401: { description: 'Unauthorized', content: { 'application/json': { schema: ErrorSchema } } },
+    403: { description: 'Forbidden', content: { 'application/json': { schema: ErrorSchema } } },
+    500: { description: 'Internal Server Error', content: { 'application/json': { schema: ErrorSchema } } },
+  },
+  summary: 'Generate a thumbnail image',
+  tags: ['Gemini'],
+});
+
+// POST /gemini/generate-article-image
+export const generateArticleImageRoute = createRoute({
+  method: 'post',
+  path: '/generate-article-image',
+  request: {
+    body: {
+      content: {
+        'application/json': {
+          schema: BaseGeminiRequestSchema, // Prompt for image generation
+        },
+      },
+      description: 'Prompt for generating an article image',
+    },
+  },
+  responses: {
+    200: {
+      content: {
+        'application/json': { 
+          schema: GenerateImageResponseSchema,
+        },
+      },
+      description: 'Article image generated successfully',
+    },
+    400: { description: 'Bad Request', content: { 'application/json': { schema: ErrorSchema } } },
+    401: { description: 'Unauthorized', content: { 'application/json': { schema: ErrorSchema } } },
+    403: { description: 'Forbidden', content: { 'application/json': { schema: ErrorSchema } } },
+    500: { description: 'Internal Server Error', content: { 'application/json': { schema: ErrorSchema } } },
+  },
+  summary: 'Generate an article image',
+  tags: ['Gemini'],
+});
+
+// POST /gemini/generate-intro-music
+export const generateIntroMusicRoute = createRoute({
+  method: 'post',
+  path: '/generate-intro-music',
+  request: {
+    body: {
+      content: {
+        'application/json': {
+          schema: BaseGeminiRequestSchema, // Prompt for music generation (e.g., mood, genre, length)
+        },
+      },
+      description: 'Prompt for generating intro music',
+    },
+  },
+  responses: {
+    200: {
+      content: {
+        'application/json': { 
+          schema: GenerateMusicResponseSchema,
+        },
+      },
+      description: 'Intro music generated successfully',
+    },
+    400: { description: 'Bad Request', content: { 'application/json': { schema: ErrorSchema } } },
+    401: { description: 'Unauthorized', content: { 'application/json': { schema: ErrorSchema } } },
+    403: { description: 'Forbidden', content: { 'application/json': { schema: ErrorSchema } } },
+    500: { description: 'Internal Server Error', content: { 'application/json': { schema: ErrorSchema } } },
+  },
+  summary: 'Generate intro music',
+  tags: ['Gemini'],
+});
+
+// POST /gemini/generate-background-music
+export const generateBackgroundMusicRoute = createRoute({
+  method: 'post',
+  path: '/generate-background-music',
+  request: {
+    body: {
+      content: {
+        'application/json': {
+          schema: BaseGeminiRequestSchema, // Prompt for music generation
+        },
+      },
+      description: 'Prompt for generating background music',
+    },
+  },
+  responses: {
+    200: {
+      content: {
+        'application/json': { 
+          schema: GenerateMusicResponseSchema,
+        },
+      },
+      description: 'Background music generated successfully',
+    },
+    400: { description: 'Bad Request', content: { 'application/json': { schema: ErrorSchema } } },
+    401: { description: 'Unauthorized', content: { 'application/json': { schema: ErrorSchema } } },
+    403: { description: 'Forbidden', content: { 'application/json': { schema: ErrorSchema } } },
+    500: { description: 'Internal Server Error', content: { 'application/json': { schema: ErrorSchema } } },
+  },
+  summary: 'Generate background music',
+  tags: ['Gemini'],
+});
+

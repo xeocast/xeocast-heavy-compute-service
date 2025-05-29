@@ -4,8 +4,7 @@ import { swaggerUI } from '@hono/swagger-ui';
 import geminiRoutes from './routes/geminiRoutes';
 import { HTTPException } from 'hono/http-exception';
 
-// If using Node.js and .env file for local development:
-// import 'dotenv/config'; // Run: pnpm add dotenv
+import 'dotenv/config';
 
 const app = new OpenAPIHono();
 
@@ -18,13 +17,13 @@ app.use('*', cors({
 
 // Basic root endpoint
 app.get('/', (c) => {
-  return c.text('Xeocast Heavy Compute Service is running!');
+  return c.redirect('https://xeocast.com');
 });
 
 // Mount API routes
-// All routes under geminiRoutes will be prefixed with /api
-// e.g., /api/gemini/generate-content
-app.route('/api', geminiRoutes);
+// All routes under geminiRoutes will be prefixed with /gemini
+// e.g., /gemini/generate-content
+app.route('/gemini', geminiRoutes);
 
 // OpenAPI Specification Route
 app.doc('/doc', {
@@ -41,7 +40,7 @@ app.doc('/doc', {
 });
 
 // Swagger UI Route
-app.get('/ui', swaggerUI({ url: '/doc' }));
+app.get('/doc/ui', swaggerUI({ url: '/doc' }));
 
 // Custom Error Handler
 app.onError((err, c) => {
@@ -55,16 +54,14 @@ app.onError((err, c) => {
 
 export default app;
 
-// To run with Node.js (requires @hono/node-server):
-// 1. pnpm add @hono/node-server
-// 2. Uncomment the following code:
-/*
+// Run with Node.js (requires @hono/node-server):
+
 import { serve } from '@hono/node-server';
 
 if (process.env.NODE_ENV !== 'test') { // Avoid running server during tests
   const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
   console.log(`Server is running on port ${port}`);
-  console.log(`Swagger UI: http://localhost:${port}/ui`);
+  console.log(`Swagger UI: http://localhost:${port}/doc/ui`);
   console.log(`OpenAPI Spec: http://localhost:${port}/doc`);
 
   serve({
@@ -72,4 +69,3 @@ if (process.env.NODE_ENV !== 'test') { // Avoid running server during tests
     port: port,
   });
 }
-*/

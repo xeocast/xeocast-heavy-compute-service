@@ -1,23 +1,86 @@
 import { OpenAPIHono } from '@hono/zod-openapi';
 import { zValidator } from '@hono/zod-validator';
 import {
-  generateContentRoute,
-  GenerateContentRequestSchema,
+  generateArticleRoute,
+  GenerateArticleRequestSchema,
+  // New Schemas
+  BaseGeminiRequestSchema, // For most new routes
+  GeneratePodcastAudioRequestSchema, // Specific for podcast audio
+  // New Route Objects
+  generateEvergreenTitlesRoute,
+  generateNewsTitlesRoute,
+  generateSeriesTitlesRoute,
+  generateArticleMetadataRoute,
+  generatePodcastScriptRoute,
+  generatePodcastAudioRoute,
+  generateThumbnailImageRoute,
+  generateArticleImageRoute,
+  generateIntroMusicRoute,
+  generateBackgroundMusicRoute,
 } from '../schemas/geminiSchemas';
-import { generateContentHandler } from '../handlers/geminiHandler';
+import { generateArticleHandler } from '../handlers/gemini/generateArticleHandler';
+// New Handlers
+import { generateEvergreenTitlesHandler } from '../handlers/gemini/generateEvergreenTitlesHandler';
+import { generateNewsTitlesHandler } from '../handlers/gemini/generateNewsTitlesHandler';
+import { generateSeriesTitlesHandler } from '../handlers/gemini/generateSeriesTitlesHandler';
+import { generateArticleMetadataHandler } from '../handlers/gemini/generateArticleMetadataHandler';
+import { generatePodcastScriptHandler } from '../handlers/gemini/generatePodcastScriptHandler';
+import { generatePodcastAudioHandler } from '../handlers/gemini/generatePodcastAudioHandler';
+import { generateThumbnailImageHandler } from '../handlers/gemini/generateThumbnailImageHandler';
+import { generateArticleImageHandler } from '../handlers/gemini/generateArticleImageHandler';
+import { generateIntroMusicHandler } from '../handlers/gemini/generateIntroMusicHandler';
+import { generateBackgroundMusicHandler } from '../handlers/gemini/generateBackgroundMusicHandler';
 import { bearerAuth } from '../middlewares/auth';
 
-const geminiRoutes = new OpenAPIHono();
+const geminiRoutes = new OpenAPIHono<{ Variables: {} }>();
 
 // Apply middleware specifically to the paths that need them.
 // Order matters: auth first, then validation.
-geminiRoutes.use(generateContentRoute.path, bearerAuth);
+geminiRoutes.use(generateArticleRoute.path, bearerAuth);
 geminiRoutes.use(
-  generateContentRoute.path,
-  zValidator('json', GenerateContentRequestSchema)
+  generateArticleRoute.path,
+  zValidator('json', GenerateArticleRequestSchema)
 );
 
-// Define the OpenAPI route
-geminiRoutes.openapi(generateContentRoute, generateContentHandler);
+// Define the OpenAPI route for generate-article
+geminiRoutes.openapi(generateArticleRoute, generateArticleHandler);
+
+// --- Register New Gemini Endpoints ---
+
+// Helper array for applying middlewares
+const newRouteConfigs = [
+  { route: generateEvergreenTitlesRoute, handler: generateEvergreenTitlesHandler, requestSchema: BaseGeminiRequestSchema },
+  { route: generateNewsTitlesRoute, handler: generateNewsTitlesHandler, requestSchema: BaseGeminiRequestSchema },
+  { route: generateSeriesTitlesRoute, handler: generateSeriesTitlesHandler, requestSchema: BaseGeminiRequestSchema },
+  { route: generateArticleMetadataRoute, handler: generateArticleMetadataHandler, requestSchema: BaseGeminiRequestSchema },
+  { route: generatePodcastScriptRoute, handler: generatePodcastScriptHandler, requestSchema: BaseGeminiRequestSchema },
+  { route: generatePodcastAudioRoute, handler: generatePodcastAudioHandler, requestSchema: GeneratePodcastAudioRequestSchema },
+  { route: generateThumbnailImageRoute, handler: generateThumbnailImageHandler, requestSchema: BaseGeminiRequestSchema },
+  { route: generateArticleImageRoute, handler: generateArticleImageHandler, requestSchema: BaseGeminiRequestSchema },
+  { route: generateIntroMusicRoute, handler: generateIntroMusicHandler, requestSchema: BaseGeminiRequestSchema },
+  { route: generateBackgroundMusicRoute, handler: generateBackgroundMusicHandler, requestSchema: BaseGeminiRequestSchema },
+];
+
+// Apply middlewares in a loop
+newRouteConfigs.forEach(({ route, requestSchema }) => {
+  geminiRoutes.use(route.path, bearerAuth);
+  geminiRoutes.use(route.path, zValidator('json', requestSchema));
+});
+
+// Define OpenAPI routes individually for type safety
+geminiRoutes.openapi(generateEvergreenTitlesRoute, generateEvergreenTitlesHandler);
+geminiRoutes.openapi(generateNewsTitlesRoute, generateNewsTitlesHandler);
+geminiRoutes.openapi(generateSeriesTitlesRoute, generateSeriesTitlesHandler);
+geminiRoutes.openapi(generateArticleMetadataRoute, generateArticleMetadataHandler);
+geminiRoutes.openapi(generatePodcastScriptRoute, generatePodcastScriptHandler);
+geminiRoutes.openapi(generatePodcastAudioRoute, generatePodcastAudioHandler);
+geminiRoutes.openapi(generateThumbnailImageRoute, generateThumbnailImageHandler);
+geminiRoutes.openapi(generateArticleImageRoute, generateArticleImageHandler);
+geminiRoutes.openapi(generateIntroMusicRoute, generateIntroMusicHandler);
+geminiRoutes.openapi(generateBackgroundMusicRoute, generateBackgroundMusicHandler);
+
+// --- Register New Gemini Endpoints ---
+
+
 
 export default geminiRoutes;
