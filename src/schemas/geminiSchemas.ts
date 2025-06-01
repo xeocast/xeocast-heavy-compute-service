@@ -104,6 +104,17 @@ export const GenerateMusicResponseSchema = z.object({
   status: z.string(),
 }).openapi('GenerateMusicResponse');
 
+// Specific Schemas for Titles
+export const GenerateTitlesResponseSchema = z.object({
+  result: z.array(
+    z.object({
+      title: z.string(),
+      description: z.string(),
+    })
+  ),
+  status: z.string(),
+}).openapi('GenerateTitlesResponse');
+
 
 // --- Route Definitions for New Gemini Endpoints ---
 
@@ -125,7 +136,7 @@ export const generateEvergreenTitlesRoute = createRoute({
     200: {
       content: {
         'application/json': {
-          schema: BaseGeminiResponseSchema,
+          schema: GenerateTitlesResponseSchema,
         },
       },
       description: 'Evergreen titles generated successfully',

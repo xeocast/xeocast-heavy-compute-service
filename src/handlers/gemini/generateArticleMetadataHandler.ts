@@ -34,8 +34,6 @@ export const generateArticleMetadataHandler = async (
   const fullPrompt = (str: string) =>
     str.replace(/\{ ?articleContent ?\}/g, article);
 
-  // console.log(fullPrompt(prompt));
-
   const aiResponse = await genAI.models.generateContent({
     model: "gemini-2.0-flash",
     contents: [
