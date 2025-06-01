@@ -3,6 +3,7 @@ import { createRoute } from '@hono/zod-openapi';
 
 export const GenerateArticleRequestSchema = z.object({
   prompt: z.string().min(1, { message: 'Prompt cannot be empty' }),
+  model: z.string().optional(),
 }).openapi('GenerateArticleRequest');
 
 export const GenerateArticleResponseSchema = z.object({
@@ -77,6 +78,7 @@ export const generateArticleRoute = createRoute({
 // --- Base Schemas for new Gemini Endpoints ---
 export const BaseGeminiRequestSchema = z.object({
   prompt: z.string().min(1, { message: 'Prompt cannot be empty' }),
+  model: z.string().optional(),
 }).openapi('BaseGeminiRequest');
 
 export const BaseGeminiResponseSchema = z.object({
@@ -186,6 +188,7 @@ export const generateNewsTitlesRoute = createRoute({
 export const GenerateArticleMetadataRequestSchema = z.object({
   prompt: z.string().min(1, { message: 'Prompt cannot be empty' }),
   article: z.string().min(1, { message: 'Article content cannot be empty' }),
+  model: z.string().optional(),
 }).openapi('GenerateArticleMetadataRequest');
 
 export const GenerateArticleMetadataResponseSchema = z.object({

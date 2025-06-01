@@ -20,7 +20,7 @@ export const generateArticleMetadataHandler = async (
     return c.json({ error: 'Invalid request body' }, 400);
   }
 
-  const { prompt, article } = validatedBody;
+  const { prompt, article, model } = validatedBody;
 
   // Check if GEMINI_API_KEY is set.
   if (!process.env.GEMINI_API_KEY) {
@@ -34,8 +34,10 @@ export const generateArticleMetadataHandler = async (
   const fullPrompt = (str: string) =>
     str.replace(/\{ ?articleContent ?\}/g, article);
 
+  const aiModel = model || "gemini-2.5-flash-preview-05-20";
+
   const aiResponse = await genAI.models.generateContent({
-    model: "gemini-2.0-flash",
+    model: aiModel,
     contents: [
       { role: "user", parts: [{ text: fullPrompt(prompt) }] }
     ],
