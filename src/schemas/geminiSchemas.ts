@@ -170,7 +170,7 @@ export const generateNewsTitlesRoute = createRoute({
     200: {
       content: {
         'application/json': {
-          schema: BaseGeminiResponseSchema,
+          schema: GenerateTitlesResponseSchema,
         },
       },
       description: 'News titles generated successfully',
