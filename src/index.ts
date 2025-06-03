@@ -12,7 +12,7 @@ const app = new OpenAPIHono();
 app.use('*', cors({
   origin: 'https://dash.xeocast.com', // Allow requests from the Xeocast dashboard
   allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowHeaders: ['Content-Type', 'Authorization'],
+  allowHeaders: ['Content-Type', 'Authorization', 'Accept'],
 }));
 
 // Basic root endpoint
