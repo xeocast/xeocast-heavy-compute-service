@@ -10,7 +10,7 @@ const app = new OpenAPIHono();
 
 // CORS Middleware
 app.use('*', cors({
-  origin: '*', // Adjust to your frontend's origin in production
+  origin: 'https://dash.xeocast.com', // Allow requests from the Xeocast dashboard
   allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowHeaders: ['Content-Type', 'Authorization'],
 }));
