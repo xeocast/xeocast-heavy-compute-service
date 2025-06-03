@@ -17,6 +17,7 @@ import {
   generateArticleImageRoute,
   generateIntroMusicRoute,
   generateBackgroundMusicRoute,
+  GenerateEpisodeScriptRequestSchema,
 } from '../schemas/geminiSchemas';
 import { generateArticleHandler } from '../handlers/gemini/generateArticleHandler';
 // New Handlers
@@ -53,7 +54,7 @@ const newRouteConfigs = [
   { route: generateNewsTitlesRoute, handler: generateNewsTitlesHandler, requestSchema: BaseGeminiRequestSchema },
   { route: generateSeriesTitlesRoute, handler: generateSeriesTitlesHandler, requestSchema: BaseGeminiRequestSchema },
   { route: generateArticleMetadataRoute, handler: generateArticleMetadataHandler, requestSchema: BaseGeminiRequestSchema },
-  { route: generateEpisodeScriptRoute, handler: generateEpisodeScriptHandler, requestSchema: BaseGeminiRequestSchema },
+  { route: generateEpisodeScriptRoute, handler: generateEpisodeScriptHandler, requestSchema: GenerateEpisodeScriptRequestSchema },
   { route: generateEpisodeAudioRoute, handler: generateEpisodeAudioHandler, requestSchema: GenerateEpisodeAudioRequestSchema },
   { route: generateThumbnailImageRoute, handler: generateThumbnailImageHandler, requestSchema: BaseGeminiRequestSchema },
   { route: generateArticleImageRoute, handler: generateArticleImageHandler, requestSchema: BaseGeminiRequestSchema },

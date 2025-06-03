@@ -290,7 +290,7 @@ export const generateEpisodeScriptRoute = createRoute({
     body: {
       content: {
         'application/json': {
-          schema: BaseGeminiRequestSchema,
+          schema: GenerateEpisodeScriptRequestSchema,
         },
       },
       description: 'Prompt for generating a episode script',
