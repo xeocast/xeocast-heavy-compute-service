@@ -87,14 +87,14 @@ export const BaseGeminiResponseSchema = z.object({
 }).openapi('BaseGeminiResponse');
 
 // Specific Schemas for certain Gemini Endpoints
-export const GeneratePodcastAudioRequestSchema = z.object({ 
+export const GenerateEpisodeAudioRequestSchema = z.object({ 
   script: z.string().min(1, { message: 'Script cannot be empty' }),
-}).openapi('GeneratePodcastAudioRequest');
+}).openapi('GenerateEpisodeAudioRequest');
 
-export const GeneratePodcastAudioResponseSchema = z.object({
+export const GenerateEpisodeAudioResponseSchema = z.object({
   audioUrl: z.string().url({ message: 'Invalid URL format for audioUrl' }),
   status: z.string(),
-}).openapi('GeneratePodcastAudioResponse');
+}).openapi('GenerateEpisodeAudioResponse');
 
 export const GenerateImageResponseSchema = z.object({
   imageUrl: z.string().url({ message: 'Invalid URL format for imageUrl' }),
@@ -105,6 +105,23 @@ export const GenerateMusicResponseSchema = z.object({
   audioUrl: z.string().url({ message: 'Invalid URL format for audioUrl' }), 
   status: z.string(),
 }).openapi('GenerateMusicResponse');
+
+// --- Specific Schemas for GenerateEpisodeScript ---
+export const GenerateEpisodeScriptRequestSchema = z.object({
+  prompt: z.string().min(1, { message: 'Prompt cannot be empty' }),
+  article: z.string().min(1, { message: 'Article content cannot be empty' }),
+  model: z.string().optional(),
+}).openapi('GenerateEpisodeScriptRequest');
+
+export const GenerateEpisodeScriptResponseSchema = z.object({
+  result: z.array(
+    z.object({
+      speaker: z.string(),
+      line: z.string(),
+    }).required({ speaker: true, line: true })
+  ),
+  status: z.string(),
+}).openapi('GenerateEpisodeScriptResponse');
 
 // Specific Schemas for Titles
 export const GenerateTitlesResponseSchema = z.object({
@@ -265,10 +282,10 @@ export const generateArticleMetadataRoute = createRoute({
   tags: ['Gemini'],
 });
 
-// POST /gemini/generate-podcast-script
-export const generatePodcastScriptRoute = createRoute({
+// POST /gemini/generate-episode-script
+export const generateEpisodeScriptRoute = createRoute({
   method: 'post',
-  path: '/generate-podcast-script',
+  path: '/generate-episode-script',
   request: {
     body: {
       content: {
@@ -276,40 +293,40 @@ export const generatePodcastScriptRoute = createRoute({
           schema: BaseGeminiRequestSchema,
         },
       },
-      description: 'Prompt for generating a podcast script',
+      description: 'Prompt for generating a episode script',
     },
   },
   responses: {
     200: {
       content: {
         'application/json': {
-          schema: BaseGeminiResponseSchema, // Response might be a longer text or structured script
+          schema: GenerateEpisodeScriptResponseSchema,
         },
       },
-      description: 'Podcast script generated successfully',
+      description: 'Episode script generated successfully',
     },
     400: { description: 'Bad Request', content: { 'application/json': { schema: ErrorSchema } } },
     401: { description: 'Unauthorized', content: { 'application/json': { schema: ErrorSchema } } },
     403: { description: 'Forbidden', content: { 'application/json': { schema: ErrorSchema } } },
     500: { description: 'Internal Server Error', content: { 'application/json': { schema: ErrorSchema } } },
   },
-  summary: 'Generate a podcast script',
+  summary: 'Generate a episode script',
   tags: ['Gemini'],
 });
 
-// POST /gemini/generate-podcast-audio
-export const generatePodcastAudioRoute = createRoute({
+// POST /gemini/generate-episode-audio
+export const generateEpisodeAudioRoute = createRoute({
   method: 'post',
-  path: '/generate-podcast-audio',
+  path: '/generate-episode-audio',
   request: {
     body: {
       content: {
         'application/json': {
           // Input might be a script text or a prompt for TTS
-          schema: GeneratePodcastAudioRequestSchema, 
+          schema: GenerateEpisodeAudioRequestSchema, 
         },
       },
-      description: 'Script or prompt for generating podcast audio',
+      description: 'Script or prompt for generating episode audio',
     },
   },
   responses: {
@@ -317,18 +334,18 @@ export const generatePodcastAudioRoute = createRoute({
       content: {
         // Response might be a URL to an audio file or binary data
         'application/json': { 
-          schema: GeneratePodcastAudioResponseSchema,
+          schema: GenerateEpisodeAudioResponseSchema,
         },
         // Or 'audio/mpeg': { schema: { type: 'string', format: 'binary' } } for direct binary response
       },
-      description: 'Podcast audio generated successfully',
+      description: 'Episode audio generated successfully',
     },
     400: { description: 'Bad Request', content: { 'application/json': { schema: ErrorSchema } } },
     401: { description: 'Unauthorized', content: { 'application/json': { schema: ErrorSchema } } },
     403: { description: 'Forbidden', content: { 'application/json': { schema: ErrorSchema } } },
     500: { description: 'Internal Server Error', content: { 'application/json': { schema: ErrorSchema } } },
   },
-  summary: 'Generate podcast audio from script',
+  summary: 'Generate episode audio from script',
   tags: ['Gemini'],
 });
 

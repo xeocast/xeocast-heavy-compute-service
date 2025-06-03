@@ -5,14 +5,14 @@ import {
   GenerateArticleRequestSchema,
   // New Schemas
   BaseGeminiRequestSchema, // For most new routes
-  GeneratePodcastAudioRequestSchema, // Specific for podcast audio
+  GenerateEpisodeAudioRequestSchema, // Specific for episode audio
   // New Route Objects
   generateEvergreenTitlesRoute,
   generateNewsTitlesRoute,
   generateSeriesTitlesRoute,
   generateArticleMetadataRoute,
-  generatePodcastScriptRoute,
-  generatePodcastAudioRoute,
+  generateEpisodeScriptRoute,
+  generateEpisodeAudioRoute,
   generateThumbnailImageRoute,
   generateArticleImageRoute,
   generateIntroMusicRoute,
@@ -24,8 +24,8 @@ import { generateEvergreenTitlesHandler } from '../handlers/gemini/generateEverg
 import { generateNewsTitlesHandler } from '../handlers/gemini/generateNewsTitlesHandler';
 import { generateSeriesTitlesHandler } from '../handlers/gemini/generateSeriesTitlesHandler';
 import { generateArticleMetadataHandler } from '../handlers/gemini/generateArticleMetadataHandler';
-import { generatePodcastScriptHandler } from '../handlers/gemini/generatePodcastScriptHandler';
-import { generatePodcastAudioHandler } from '../handlers/gemini/generatePodcastAudioHandler';
+import { generateEpisodeScriptHandler } from '../handlers/gemini/generateEpisodeScriptHandler';
+import { generateEpisodeAudioHandler } from '../handlers/gemini/generateEpisodeAudioHandler';
 import { generateThumbnailImageHandler } from '../handlers/gemini/generateThumbnailImageHandler';
 import { generateArticleImageHandler } from '../handlers/gemini/generateArticleImageHandler';
 import { generateIntroMusicHandler } from '../handlers/gemini/generateIntroMusicHandler';
@@ -53,8 +53,8 @@ const newRouteConfigs = [
   { route: generateNewsTitlesRoute, handler: generateNewsTitlesHandler, requestSchema: BaseGeminiRequestSchema },
   { route: generateSeriesTitlesRoute, handler: generateSeriesTitlesHandler, requestSchema: BaseGeminiRequestSchema },
   { route: generateArticleMetadataRoute, handler: generateArticleMetadataHandler, requestSchema: BaseGeminiRequestSchema },
-  { route: generatePodcastScriptRoute, handler: generatePodcastScriptHandler, requestSchema: BaseGeminiRequestSchema },
-  { route: generatePodcastAudioRoute, handler: generatePodcastAudioHandler, requestSchema: GeneratePodcastAudioRequestSchema },
+  { route: generateEpisodeScriptRoute, handler: generateEpisodeScriptHandler, requestSchema: BaseGeminiRequestSchema },
+  { route: generateEpisodeAudioRoute, handler: generateEpisodeAudioHandler, requestSchema: GenerateEpisodeAudioRequestSchema },
   { route: generateThumbnailImageRoute, handler: generateThumbnailImageHandler, requestSchema: BaseGeminiRequestSchema },
   { route: generateArticleImageRoute, handler: generateArticleImageHandler, requestSchema: BaseGeminiRequestSchema },
   { route: generateIntroMusicRoute, handler: generateIntroMusicHandler, requestSchema: BaseGeminiRequestSchema },
@@ -72,8 +72,8 @@ geminiRoutes.openapi(generateEvergreenTitlesRoute, generateEvergreenTitlesHandle
 geminiRoutes.openapi(generateNewsTitlesRoute, generateNewsTitlesHandler);
 geminiRoutes.openapi(generateSeriesTitlesRoute, generateSeriesTitlesHandler);
 geminiRoutes.openapi(generateArticleMetadataRoute, generateArticleMetadataHandler);
-geminiRoutes.openapi(generatePodcastScriptRoute, generatePodcastScriptHandler);
-geminiRoutes.openapi(generatePodcastAudioRoute, generatePodcastAudioHandler);
+geminiRoutes.openapi(generateEpisodeScriptRoute, generateEpisodeScriptHandler);
+geminiRoutes.openapi(generateEpisodeAudioRoute, generateEpisodeAudioHandler);
 geminiRoutes.openapi(generateThumbnailImageRoute, generateThumbnailImageHandler);
 geminiRoutes.openapi(generateArticleImageRoute, generateArticleImageHandler);
 geminiRoutes.openapi(generateIntroMusicRoute, generateIntroMusicHandler);
