@@ -20,7 +20,6 @@ export const generateSeriesTitlesHandler = async (
   }
 
   const { prompt } = validatedBody;
-  console.log(`Received prompt for series titles: "${prompt}"`);
 
   const response: z.infer<typeof BaseGeminiResponseSchema> = {
     result: `Placeholder for series titles from prompt: "${prompt}"`,

@@ -66,7 +66,6 @@ export const generateEpisodeScriptHandler = async (
   });
 
   const metaJsonString = aiResponse.text;
-  console.log(metaJsonString);
 
   if (!metaJsonString) {
     return c.json({ error: 'Failed to generate content' }, 500);

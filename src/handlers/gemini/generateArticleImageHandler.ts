@@ -20,7 +20,6 @@ export const generateArticleImageHandler = async (
   }
 
   const { prompt } = validatedBody;
-  console.log(`Received prompt for article image: "${prompt}"`);
 
   const response: z.infer<typeof GenerateImageResponseSchema> = {
     imageUrl: `https://example.com/placeholder-article-image-for-prompt.png`,

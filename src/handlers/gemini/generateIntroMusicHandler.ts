@@ -20,7 +20,6 @@ export const generateIntroMusicHandler = async (
   }
 
   const { prompt } = validatedBody;
-  console.log(`Received prompt for intro music: "${prompt}"`);
 
   const response: z.infer<typeof GenerateMusicResponseSchema> = {
     audioUrl: `https://example.com/placeholder-intro-music-for-prompt.mp3`,

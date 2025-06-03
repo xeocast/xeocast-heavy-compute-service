@@ -20,7 +20,6 @@ export const generateEpisodeAudioHandler = async (
   }
 
   const { script } = validatedBody;
-  console.log(`Received script for episode audio: "${script.substring(0, 50)}..."`);
 
   const response: z.infer<typeof GenerateEpisodeAudioResponseSchema> = {
     audioUrl: `https://example.com/placeholder-audio-for-script.mp3`,

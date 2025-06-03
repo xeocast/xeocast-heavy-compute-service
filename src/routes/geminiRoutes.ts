@@ -35,17 +35,6 @@ import { bearerAuth } from '../middlewares/auth';
 
 const geminiRoutes = new OpenAPIHono<{ Variables: {} }>();
 
-// Apply middleware specifically to the paths that need them.
-// Order matters: auth first, then validation.
-geminiRoutes.use(generateArticleRoute.path, bearerAuth);
-geminiRoutes.use(
-  generateArticleRoute.path,
-  zValidator('json', GenerateArticleRequestSchema)
-);
-
-// Define the OpenAPI route for generate-article
-geminiRoutes.openapi(generateArticleRoute, generateArticleHandler);
-
 // --- Register New Gemini Endpoints ---
 
 // Helper array for applying middlewares
@@ -53,6 +42,7 @@ const newRouteConfigs = [
   { route: generateEvergreenTitlesRoute, handler: generateEvergreenTitlesHandler, requestSchema: BaseGeminiRequestSchema },
   { route: generateNewsTitlesRoute, handler: generateNewsTitlesHandler, requestSchema: BaseGeminiRequestSchema },
   { route: generateSeriesTitlesRoute, handler: generateSeriesTitlesHandler, requestSchema: BaseGeminiRequestSchema },
+  { route: generateArticleRoute, handler: generateArticleHandler, requestSchema: GenerateArticleRequestSchema },
   { route: generateArticleMetadataRoute, handler: generateArticleMetadataHandler, requestSchema: BaseGeminiRequestSchema },
   { route: generateEpisodeScriptRoute, handler: generateEpisodeScriptHandler, requestSchema: GenerateEpisodeScriptRequestSchema },
   { route: generateEpisodeAudioRoute, handler: generateEpisodeAudioHandler, requestSchema: GenerateEpisodeAudioRequestSchema },
@@ -72,6 +62,7 @@ newRouteConfigs.forEach(({ route, requestSchema }) => {
 geminiRoutes.openapi(generateEvergreenTitlesRoute, generateEvergreenTitlesHandler);
 geminiRoutes.openapi(generateNewsTitlesRoute, generateNewsTitlesHandler);
 geminiRoutes.openapi(generateSeriesTitlesRoute, generateSeriesTitlesHandler);
+geminiRoutes.openapi(generateArticleRoute, generateArticleHandler);
 geminiRoutes.openapi(generateArticleMetadataRoute, generateArticleMetadataHandler);
 geminiRoutes.openapi(generateEpisodeScriptRoute, generateEpisodeScriptHandler);
 geminiRoutes.openapi(generateEpisodeAudioRoute, generateEpisodeAudioHandler);

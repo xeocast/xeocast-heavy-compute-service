@@ -20,7 +20,6 @@ export const generateBackgroundMusicHandler = async (
   }
 
   const { prompt } = validatedBody;
-  console.log(`Received prompt for background music: "${prompt}"`);
 
   const response: z.infer<typeof GenerateMusicResponseSchema> = {
     audioUrl: `https://example.com/placeholder-background-music-for-prompt.mp3`,
