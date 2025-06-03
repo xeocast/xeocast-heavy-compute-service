@@ -43,7 +43,7 @@ export const generateArticleHandler = async (
 
   const aiResponse = await genAI.models.generateContent({
     model: aiModel,
-    contents: prompt,
+    contents: [{ role: "user", parts: [{ text: prompt }] }],
   });
 
 
