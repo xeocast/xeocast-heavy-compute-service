@@ -2,6 +2,7 @@ import { OpenAPIHono } from '@hono/zod-openapi';
 import { cors } from 'hono/cors';
 import { swaggerUI } from '@hono/swagger-ui';
 import geminiRoutes from './routes/geminiRoutes';
+import taskRoutes from './routes/taskRoutes';
 import { HTTPException } from 'hono/http-exception';
 
 import 'dotenv/config';
@@ -24,6 +25,7 @@ app.get('/', (c) => {
 // All routes under geminiRoutes will be prefixed with /gemini
 // e.g., /gemini/generate-content
 app.route('/gemini', geminiRoutes);
+app.route('/tasks', taskRoutes);
 
 // OpenAPI Specification Route
 app.doc('/doc', {
