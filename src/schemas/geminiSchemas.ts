@@ -6,6 +6,8 @@ export const GenerateArticleRequestSchema = z.object({
   model: z.string().optional(),
 }).openapi('GenerateArticleRequest');
 
+export type InferredGenerateArticleRequest = z.infer<typeof GenerateArticleRequestSchema>;
+
 export const GenerateArticleResponseSchema = z.object({
   generatedText: z.string(),
   status: z.string(),
@@ -14,6 +16,11 @@ export const GenerateArticleResponseSchema = z.object({
 export const ErrorSchema = z.object({
   error: z.string(),
 }).openapi('Error');
+
+export const TaskCreationResponseSchema = z.object({
+  taskId: z.string(),
+  message: z.string(),
+}).openapi('TaskCreationResponse');
 
 // /gemini/generate-article
 export const generateArticleRoute = createRoute({
@@ -37,6 +44,14 @@ export const generateArticleRoute = createRoute({
         },
       },
       description: 'Content generated successfully',
+    },
+    202: {
+      content: {
+        'application/json': {
+          schema: TaskCreationResponseSchema,
+        },
+      },
+      description: 'Task created successfully and is being processed',
     },
     400: {
       description: 'Bad Request: Invalid input',

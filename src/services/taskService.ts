@@ -25,7 +25,6 @@ export const createTask = (input?: unknown): string => {
   }
 
   tasks.set(taskId, newTask);
-  console.log(`Task created: ${taskId}`, newTask);
   return taskId;
 };
 
@@ -66,7 +65,6 @@ export const updateTask = (
   }
 
   tasks.set(taskId, updatedTask);
-  console.log(`Task updated: ${taskId}`, updatedTask);
   return updatedTask;
 };
 
