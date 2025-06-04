@@ -37,14 +37,6 @@ export const generateArticleRoute = createRoute({
     },
   },
   responses: {
-    200: {
-      content: {
-        'application/json': {
-          schema: GenerateArticleResponseSchema,
-        },
-      },
-      description: 'Content generated successfully',
-    },
     202: {
       content: {
         'application/json': {
@@ -312,13 +304,13 @@ export const generateEpisodeScriptRoute = createRoute({
     },
   },
   responses: {
-    200: {
+    202: {
       content: {
         'application/json': {
-          schema: GenerateEpisodeScriptResponseSchema,
+          schema: TaskCreationResponseSchema, // Use the existing schema for task creation responses
         },
       },
-      description: 'Episode script generated successfully',
+      description: 'Task created successfully and episode script generation is being processed',
     },
     400: { description: 'Bad Request', content: { 'application/json': { schema: ErrorSchema } } },
     401: { description: 'Unauthorized', content: { 'application/json': { schema: ErrorSchema } } },
