@@ -96,7 +96,10 @@ export const BaseGeminiResponseSchema = z.object({
 // Specific Schemas for certain Gemini Endpoints
 export const GenerateEpisodeAudioRequestSchema = z.object({ 
   script: z.string().min(1, { message: 'Script cannot be empty' }),
+  model: z.string().optional(), // Added optional model
 }).openapi('GenerateEpisodeAudioRequest');
+
+export type InferredGenerateEpisodeAudioRequest = z.infer<typeof GenerateEpisodeAudioRequestSchema>;
 
 export const GenerateEpisodeAudioResponseSchema = z.object({
   audioUrl: z.string().url({ message: 'Invalid URL format for audioUrl' }),
@@ -329,30 +332,27 @@ export const generateEpisodeAudioRoute = createRoute({
     body: {
       content: {
         'application/json': {
-          // Input might be a script text or a prompt for TTS
-          schema: GenerateEpisodeAudioRequestSchema, 
+          schema: GenerateEpisodeAudioRequestSchema, // Uses updated schema with optional model
         },
       },
-      description: 'Script or prompt for generating episode audio',
+      description: 'Script and optional model for audio generation',
     },
   },
   responses: {
-    200: {
+    202: { // Changed from 200 to 202 for async task creation
       content: {
-        // Response might be a URL to an audio file or binary data
-        'application/json': { 
-          schema: GenerateEpisodeAudioResponseSchema,
+        'application/json': {
+          schema: TaskCreationResponseSchema, // Response is now taskId and message
         },
-        // Or 'audio/mpeg': { schema: { type: 'string', format: 'binary' } } for direct binary response
       },
-      description: 'Episode audio generated successfully',
+      description: 'Audio generation task created and processing started. The actual audio (GenerateEpisodeAudioResponseSchema) will be available via the task status endpoint once completed.',
     },
     400: { description: 'Bad Request', content: { 'application/json': { schema: ErrorSchema } } },
     401: { description: 'Unauthorized', content: { 'application/json': { schema: ErrorSchema } } },
     403: { description: 'Forbidden', content: { 'application/json': { schema: ErrorSchema } } },
     500: { description: 'Internal Server Error', content: { 'application/json': { schema: ErrorSchema } } },
   },
-  summary: 'Generate episode audio from script',
+  summary: 'Initiate generation of episode audio from script (asynchronous)',
   tags: ['Gemini'],
 });
 
