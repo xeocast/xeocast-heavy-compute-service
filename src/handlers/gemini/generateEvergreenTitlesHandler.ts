@@ -4,7 +4,7 @@ import {
   generateEvergreenTitlesRoute,
   BaseGeminiRequestSchema,
   GenerateTitlesResponseSchema,
-} from '../../schemas/geminiSchemas';
+} from '../../schemas/geminiSchemas.js';
 import { GoogleGenAI, Type } from '@google/genai';
 
 export const generateEvergreenTitlesHandler = async (

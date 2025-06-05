@@ -1,8 +1,8 @@
 import { OpenAPIHono } from '@hono/zod-openapi';
-import { TaskRoute, ListTasksRoute } from '../schemas/taskSchemas';
-import { getTaskHandler } from '../handlers/tasks/getTaskHandler';
-import { listTasksHandler } from '../handlers/tasks/listTasksHandler';
-import { bearerAuth } from '../middlewares/auth'; // Assuming your auth middleware is in 'middlewares/auth.ts'
+import { TaskRoute, ListTasksRoute } from '../schemas/taskSchemas.js';
+import { getTaskHandler } from '../handlers/tasks/getTaskHandler.js';
+import { listTasksHandler } from '../handlers/tasks/listTasksHandler.js';
+import { bearerAuth } from '../middlewares/auth.js'; // Assuming your auth middleware is in 'middlewares/auth.ts'
 
 // Following the pattern from geminiRoutes.ts and memory cbdd0f3c
 const taskRoutes = new OpenAPIHono<{ Variables: {} }>();

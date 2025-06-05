@@ -18,20 +18,20 @@ import {
   generateIntroMusicRoute,
   generateBackgroundMusicRoute,
   GenerateEpisodeScriptRequestSchema,
-} from '../schemas/geminiSchemas';
-import { generateArticleHandler } from '../handlers/gemini/generateArticleHandler';
+} from '../schemas/geminiSchemas.js';
+import { generateArticleHandler } from '../handlers/gemini/generateArticleHandler.js';
 // New Handlers
-import { generateEvergreenTitlesHandler } from '../handlers/gemini/generateEvergreenTitlesHandler';
-import { generateNewsTitlesHandler } from '../handlers/gemini/generateNewsTitlesHandler';
-import { generateSeriesTitlesHandler } from '../handlers/gemini/generateSeriesTitlesHandler';
-import { generateArticleMetadataHandler } from '../handlers/gemini/generateArticleMetadataHandler';
-import { generateEpisodeScriptHandler } from '../handlers/gemini/generateEpisodeScriptHandler';
-import { generateEpisodeAudioHandler } from '../handlers/gemini/generateEpisodeAudioHandler';
-import { generateThumbnailImageHandler } from '../handlers/gemini/generateThumbnailImageHandler';
-import { generateArticleImageHandler } from '../handlers/gemini/generateArticleImageHandler';
-import { generateIntroMusicHandler } from '../handlers/gemini/generateIntroMusicHandler';
-import { generateBackgroundMusicHandler } from '../handlers/gemini/generateBackgroundMusicHandler';
-import { bearerAuth } from '../middlewares/auth';
+import { generateEvergreenTitlesHandler } from '../handlers/gemini/generateEvergreenTitlesHandler.js';
+import { generateNewsTitlesHandler } from '../handlers/gemini/generateNewsTitlesHandler.js';
+import { generateSeriesTitlesHandler } from '../handlers/gemini/generateSeriesTitlesHandler.js';
+import { generateArticleMetadataHandler } from '../handlers/gemini/generateArticleMetadataHandler.js';
+import { generateEpisodeScriptHandler } from '../handlers/gemini/generateEpisodeScriptHandler.js';
+import { generateEpisodeAudioHandler } from '../handlers/gemini/generateEpisodeAudioHandler.js';
+import { generateThumbnailImageHandler } from '../handlers/gemini/generateThumbnailImageHandler.js';
+import { generateArticleImageHandler } from '../handlers/gemini/generateArticleImageHandler.js';
+import { generateIntroMusicHandler } from '../handlers/gemini/generateIntroMusicHandler.js';
+import { generateBackgroundMusicHandler } from '../handlers/gemini/generateBackgroundMusicHandler.js';
+import { bearerAuth } from '../middlewares/auth.js';
 
 const geminiRoutes = new OpenAPIHono<{ Variables: {} }>();
 

@@ -1,8 +1,8 @@
 import { OpenAPIHono } from '@hono/zod-openapi';
 import { cors } from 'hono/cors';
 import { swaggerUI } from '@hono/swagger-ui';
-import geminiRoutes from './routes/geminiRoutes';
-import taskRoutes from './routes/taskRoutes';
+import geminiRoutes from './routes/geminiRoutes.js';
+import taskRoutes from './routes/taskRoutes.js';
 import { HTTPException } from 'hono/http-exception';
 
 import 'dotenv/config';

@@ -97,12 +97,14 @@ export const BaseGeminiResponseSchema = z.object({
 export const GenerateEpisodeAudioRequestSchema = z.object({ 
   script: z.string().min(1, { message: 'Script cannot be empty' }),
   model: z.string().optional(), // Added optional model
+  output_bucket_key: z.string().optional().describe('The R2 bucket key where the generated audio should be stored.'),
 }).openapi('GenerateEpisodeAudioRequest');
 
 export type InferredGenerateEpisodeAudioRequest = z.infer<typeof GenerateEpisodeAudioRequestSchema>;
 
 export const GenerateEpisodeAudioResponseSchema = z.object({
-  audioUrl: z.string().url({ message: 'Invalid URL format for audioUrl' }),
+  bucketKey: z.string().describe('The R2 bucket key where the audio file is stored.'),
+  mimeType: z.string().describe('The MIME type of the generated audio file.'),
   status: z.string(),
 }).openapi('GenerateEpisodeAudioResponse');
 

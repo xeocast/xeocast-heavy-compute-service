@@ -4,7 +4,7 @@ import {
   generateBackgroundMusicRoute,
   BaseGeminiRequestSchema,
   GenerateMusicResponseSchema,
-} from '../../schemas/geminiSchemas';
+} from '../../schemas/geminiSchemas.js';
 
 export const generateBackgroundMusicHandler = async (
   c: Context<

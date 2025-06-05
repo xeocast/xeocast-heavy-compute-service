@@ -4,7 +4,7 @@ import {
   generateSeriesTitlesRoute,
   BaseGeminiRequestSchema,
   BaseGeminiResponseSchema,
-} from '../../schemas/geminiSchemas';
+} from '../../schemas/geminiSchemas.js';
 
 export const generateSeriesTitlesHandler = async (
   c: Context<

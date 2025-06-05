@@ -4,7 +4,7 @@ import {
   generateArticleImageRoute,
   BaseGeminiRequestSchema,
   GenerateImageResponseSchema,
-} from '../../schemas/geminiSchemas';
+} from '../../schemas/geminiSchemas.js';
 
 export const generateArticleImageHandler = async (
   c: Context<

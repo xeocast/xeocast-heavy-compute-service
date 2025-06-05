@@ -4,7 +4,7 @@ import {
   generateIntroMusicRoute,
   BaseGeminiRequestSchema,
   GenerateMusicResponseSchema,
-} from '../../schemas/geminiSchemas';
+} from '../../schemas/geminiSchemas.js';
 
 export const generateIntroMusicHandler = async (
   c: Context<

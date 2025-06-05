@@ -4,7 +4,7 @@ import {
   generateArticleMetadataRoute,
   GenerateArticleMetadataRequestSchema,
   GenerateArticleMetadataResponseSchema,
-} from '../../schemas/geminiSchemas';
+} from '../../schemas/geminiSchemas.js';
 import { GoogleGenAI, Type } from '@google/genai';
 
 export const generateArticleMetadataHandler = async (

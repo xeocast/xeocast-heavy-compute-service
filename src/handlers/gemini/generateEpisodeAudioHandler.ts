@@ -6,43 +6,37 @@ import {
   GenerateEpisodeAudioRequestSchema,
   type InferredGenerateEpisodeAudioRequest,
   // GenerateEpisodeAudioResponseSchema is used for the task's result structure
-} from '../../schemas/geminiSchemas';
+} from '../../schemas/geminiSchemas.js';
 import { GoogleGenAI } from '@google/genai';
-import { createTask, updateTask } from '../../services/taskService';
-import { writeFile, mkdir } from 'fs/promises';
-import * as path from 'path';
-import { FileWriter } from 'wav'; // Added for saving WAV files
-// import mime from 'mime'; // No longer needed as we're saving as WAV
+import { createTask, updateTask } from '../../services/taskService.js';
+import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+import mime from 'mime/lite';
+import { Writer } from 'wav';
 import { type Part, type GenerationConfig, Modality } from '@google/genai'; // Added Modality
 
-// Ensure your Hono server is configured to serve static files from 'public' directory
-// e.g., app.use('/static/*', serveStatic({ root: './public' }))
-// Then the audioUrl can be something like /static/audio/taskId.mp3
-const AUDIO_PUBLIC_PATH = '/audio'; // Relative path for the URL
-const AUDIO_SAVE_DIR = path.join(process.cwd(), 'public', 'audio'); // Absolute path for saving files
+// R2 Client (initialized later if credentials are valid)
+let r2Client: S3Client | undefined;
 
-// Utility function to save PCM data as a WAV file (adapted from example)
-async function saveWaveFile(
-  filename: string,
-  pcmData: Buffer,
-  channels = 1,
-  sampleRate = 24000, // Default from example, ensure Gemini output matches
-  bitDepth = 16      // Default from example (sampleWidth = 2 bytes * 8 = 16 bits)
-): Promise<void> {
-  return new Promise((resolve, reject) => {
-    const writer = new FileWriter(filename, {
-      channels,
-      sampleRate,
-      bitDepth,
-    });
+const initializeR2Client = () => {
+  if (r2Client) return r2Client;
 
-    writer.on('finish', resolve);
-    writer.on('error', reject);
+  const { R2_ENDPOINT_URL, R2_RW_ACCESS_KEY_ID, R2_RW_SECRET_ACCESS_KEY } = process.env;
 
-    writer.write(pcmData);
-    writer.end();
+  if (!R2_ENDPOINT_URL || !R2_RW_ACCESS_KEY_ID || !R2_RW_SECRET_ACCESS_KEY) {
+    console.error('R2 client environment variables (R2_ENDPOINT_URL, R2_RW_ACCESS_KEY_ID, R2_RW_SECRET_ACCESS_KEY) are not fully configured.');
+    return undefined;
+  }
+
+  r2Client = new S3Client({
+    region: 'auto',
+    endpoint: R2_ENDPOINT_URL,
+    credentials: {
+      accessKeyId: R2_RW_ACCESS_KEY_ID,
+      secretAccessKey: R2_RW_SECRET_ACCESS_KEY,
+    },
   });
-}
+  return r2Client;
+};
 
 export const generateEpisodeAudioHandler = async (
   c: Context<
@@ -57,7 +51,7 @@ export const generateEpisodeAudioHandler = async (
     return c.json({ error: 'Invalid request body' }, 400) as any;
   }
 
-  const { script, model: requestedModel } = validatedBody;
+  const { script, model: requestedModel, output_bucket_key } = validatedBody;
 
   const taskId = createTask({ script, model: requestedModel, type: 'audioGeneration' });
 
@@ -66,6 +60,22 @@ export const generateEpisodeAudioHandler = async (
   const processAndCompleteTask = async () => {
     try {
       updateTask(taskId, 'PROCESSING');
+
+      if (output_bucket_key) {
+        console.log(`Task ${taskId}: Received output_bucket_key: ${output_bucket_key}`);
+      } else {
+        console.log(`Task ${taskId}: output_bucket_key not provided.`);
+      }
+
+      const r2 = initializeR2Client();
+      const r2BucketName = process.env.R2_EPISODE_PROJECTS_BUCKET;
+
+      if (!r2 || !r2BucketName) {
+        const errorMessage = !r2 ? 'R2 client failed to initialize. Check R2 environment variables.' : 'R2_EPISODE_PROJECTS_BUCKET environment variable is not set.';
+        console.error(`Task ${taskId}: ${errorMessage}`);
+        updateTask(taskId, 'FAILED', { error: { message: errorMessage } });
+        return;
+      }
 
       if (!process.env.GEMINI_API_KEY) {
         console.error(`Task ${taskId}: GEMINI_API_KEY is not configured.`);
@@ -87,15 +97,15 @@ export const generateEpisodeAudioHandler = async (
           multiSpeakerVoiceConfig: {
             speakerVoiceConfigs: [
               {
-                speaker: 'Charon',
+                speaker: 'Alex',
                 voiceConfig: {
-                  prebuiltVoiceConfig: { voiceName: 'Kore' } 
+                  prebuiltVoiceConfig: { voiceName: 'charon' } 
                 }
               },
               {
-                speaker: 'Callirhoe',
+                speaker: 'Emma',
                 voiceConfig: {
-                  prebuiltVoiceConfig: { voiceName: 'Puck' } 
+                  prebuiltVoiceConfig: { voiceName: 'callirrhoe' } 
                 }
               }
             ]
@@ -124,25 +134,77 @@ export const generateEpisodeAudioHandler = async (
         return;
       }
 
-      const inlineData = audioPart.inlineData; // inlineData is guaranteed by the check above
-      const data = audioPart.inlineData.data; // data is also guaranteed to be a string
+      const inlineData = audioPart.inlineData;
+      const audioDataB64 = audioPart.inlineData.data;
+      const originalMimeTypeFromApi = audioPart.inlineData.mimeType;
+      console.log(`Task ${taskId}: Original MIME type from Gemini API: ${originalMimeTypeFromApi}`);
+
+      const rawPcmBuffer = Buffer.from(audioDataB64, 'base64');
+      console.log(`Task ${taskId}: Decoded base64 audio data. Raw PCM buffer size: ${rawPcmBuffer.length}`);
+
+      // Convert raw PCM to WAV format. The result will be named 'audioBuffer' to match subsequent code.
+      const audioBuffer = await new Promise<Buffer>((resolve, reject) => {
+        try {
+          const writer = new Writer({
+            sampleRate: 24000, // Based on Gemini TTS output: 24kHz
+            channels: 1,       // Assuming mono for TTS
+            bitDepth: 16,      // Assuming 16-bit PCM
+          });
+
+          const chunks: Buffer[] = [];
+          writer.on('data', (chunk) => {
+            chunks.push(chunk);
+          });
+          writer.on('end', () => {
+            resolve(Buffer.concat(chunks));
+          });
+          writer.on('error', (err: Error) => {
+            console.error(`Task ${taskId}: Error during WAV encoding: ${err.message}`, err);
+            reject(new Error(`Failed to encode audio to WAV: ${err.message}`));
+          });
+
+          writer.write(rawPcmBuffer);
+          writer.end();
+        } catch (err: any) {
+          console.error(`Task ${taskId}: Synchronous exception during WAV writer setup: ${err.message}`, err);
+          reject(new Error(`Synchronous exception during WAV writer setup: ${err.message}`));
+        }
+      });
       
-      const fileExtension = 'wav'; // Hardcoding to wav as per example
-      const audioBuffer = Buffer.from(data, 'base64');
+      console.log(`Task ${taskId}: Successfully encoded audio to WAV format. Final WAV buffer size: ${audioBuffer.length}`);
 
-      await mkdir(AUDIO_SAVE_DIR, { recursive: true });
-      const audioFileName = `${taskId}.${fileExtension}`;
-      const audioFilePath = path.join(AUDIO_SAVE_DIR, audioFileName);
+      // Warn if the original MIME type doesn't look like raw PCM, as our WAV encoding assumes it is.
+      if (originalMimeTypeFromApi && !originalMimeTypeFromApi.toLowerCase().includes('pcm') && !originalMimeTypeFromApi.toLowerCase().includes('raw') && !originalMimeTypeFromApi.toLowerCase().includes('l16')) {
+        console.warn(`Task ${taskId}: Original MIME type from Gemini was '${originalMimeTypeFromApi}'. We assumed this was raw PCM data and encoded it to WAV. If audio playback fails or is distorted, the original data might not have been compatible raw PCM.`);
+      }
+      
+      const mimeType = 'audio/wav'; // This is now accurate as we've encoded to WAV
+      const extension = 'wav';     // Consistent with WAV format
+      
+      // Subsequent code will use 'audioBuffer' which now holds the WAV formatted data.
 
-      // Use saveWaveFile utility (assuming default params match Gemini output)
-      await saveWaveFile(audioFilePath, audioBuffer);
-      console.log(`Task ${taskId}: Audio saved to ${audioFilePath}`);
+      let finalBucketKey = output_bucket_key;
+      if (finalBucketKey) {
+        finalBucketKey = finalBucketKey.replace('{extension}', extension);
+      } else {
+        finalBucketKey = `${taskId}.${extension}`;
+      }
+      
+      console.log(`Task ${taskId}: Uploading audio to R2. Bucket: ${r2BucketName}, Key: ${finalBucketKey}, MimeType: ${mimeType}`);
 
-      const serverBaseUrl = process.env.SERVER_BASE_URL || '';
-      const audioUrl = `${serverBaseUrl}${AUDIO_PUBLIC_PATH}/${audioFileName}`;
+      const putObjectCommand = new PutObjectCommand({
+        Bucket: r2BucketName,
+        Key: finalBucketKey,
+        Body: audioBuffer,
+        ContentType: mimeType,
+      });
+
+      await r2.send(putObjectCommand);
+      console.log(`Task ${taskId}: Audio successfully uploaded to R2. Key: ${finalBucketKey}`);
 
       const resultPayload = {
-        audioUrl: audioUrl,
+        bucketKey: finalBucketKey,
+        mimeType: mimeType,
         status: 'success',
       };
       updateTask(taskId, 'COMPLETED', { result: resultPayload });

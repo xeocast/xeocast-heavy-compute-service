@@ -4,7 +4,7 @@ import {
   generateThumbnailImageRoute,
   BaseGeminiRequestSchema,
   GenerateImageResponseSchema,
-} from '../../schemas/geminiSchemas';
+} from '../../schemas/geminiSchemas.js';
 import { GoogleGenAI } from '@google/genai';
 
 export const generateThumbnailImageHandler = async (

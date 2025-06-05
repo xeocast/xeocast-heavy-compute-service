@@ -6,9 +6,9 @@ import {
   GenerateArticleRequestSchema, // Keep for z.infer on response or if needed elsewhere
   type InferredGenerateArticleRequest, // Import the new type alias
   // GenerateArticleResponseSchema, // No longer directly returned by handler's immediate response, but its structure is used for task result
-} from '../../schemas/geminiSchemas';
+} from '../../schemas/geminiSchemas.js';
 import { GoogleGenAI } from '@google/genai'; // Reverted to GoogleGenAI
-import { createTask, updateTask } from '../../services/taskService';
+import { createTask, updateTask } from '../../services/taskService.js';
 
 // This is a skeleton handler. Implement the actual Gemini API call here.
 export const generateArticleHandler = async (

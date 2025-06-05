@@ -5,9 +5,9 @@ import {
   generateEpisodeScriptRoute, // Import the route definition
   GenerateEpisodeScriptRequestSchema, // Keep for z.infer on response or if needed elsewhere
   // GenerateEpisodeScriptResponseSchema, // No longer directly returned by handler's immediate response
-} from '../../schemas/geminiSchemas';
+} from '../../schemas/geminiSchemas.js';
 import { GoogleGenAI, Type } from '@google/genai';
-import { createTask, updateTask } from '../../services/taskService';
+import { createTask, updateTask } from '../../services/taskService.js';
 
 // Define the type for the input based on the Zod schema
 type InferredGenerateEpisodeScriptRequest = z.infer<typeof GenerateEpisodeScriptRequestSchema>;

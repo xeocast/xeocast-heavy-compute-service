@@ -1,7 +1,7 @@
 import { Context } from 'hono';
 import { HTTPException } from 'hono/http-exception';
-import { getTaskById } from '../../services/taskService';
-import { GetTaskPathParamsSchema } from '../../schemas/taskSchemas'; // For param validation
+import { getTaskById } from '../../services/taskService.js';
+import { GetTaskPathParamsSchema } from '../../schemas/taskSchemas.js'; // For param validation
 
 export const getTaskHandler = async (c: Context<{ Variables: {} }>) => {
   const paramData = { taskId: c.req.param('taskId') };
