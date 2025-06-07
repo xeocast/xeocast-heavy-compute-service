@@ -3,6 +3,7 @@ import { cors } from 'hono/cors';
 import { swaggerUI } from '@hono/swagger-ui';
 import geminiRoutes from './routes/geminiRoutes.js';
 import taskRoutes from './routes/taskRoutes.js';
+import storageRoutes from './routes/storageRoutes.js';
 import { HTTPException } from 'hono/http-exception';
 
 import 'dotenv/config';
@@ -26,6 +27,7 @@ app.get('/', (c) => {
 // e.g., /gemini/generate-content
 app.route('/gemini', geminiRoutes);
 app.route('/tasks', taskRoutes);
+app.route('/storage', storageRoutes);
 
 // OpenAPI Specification Route
 app.doc('/doc', {

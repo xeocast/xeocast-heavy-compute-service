@@ -42,6 +42,7 @@ export type ListTasksResponse = z.infer<typeof ListTasksResponseSchema>;
 
 export const ListTasksRoute = createRoute({
   method: 'get',
+  tags: ['Tasks'],
   path: '/',
   responses: {
     200: {
@@ -57,6 +58,7 @@ export const ListTasksRoute = createRoute({
 
 export const TaskRoute = createRoute({
   method: 'get',
+  tags: ['Tasks'],
   path: '/{taskId}',
   request: {
     params: GetTaskPathParamsSchema,
