@@ -14,14 +14,25 @@ import {
     // MissingContentTypeErrorSchema,
 } from '../schemas/storageSchemas.js';
 
-// Define a minimal Env type for Bindings if specific env vars are needed by routes in this file.
-// For now, using a generic object as the handler itself doesn't expect specific bindings.
+// Define Env type for Bindings to match the handler's expected environment variables.
+// This ensures type compatibility between the router and the handler.
+interface AppEnv {
+    R2_ENDPOINT_URL: string;
+    R2_RW_ACCESS_KEY_ID: string;
+    R2_RW_SECRET_ACCESS_KEY: string;
+    R2_EPISODE_PROJECTS_BUCKET: string;
+    R2_DEFAULT_FILES_BUCKET: string;
+    BEARER_TOKEN: string; // Assuming this is also part of your CloudflareEnv / .env
+    GEMINI_API_KEY: string; // Assuming this is also part of your CloudflareEnv / .env
+    [key: string]: any; // Allow other env vars that might be present
+}
+
 type Env = {
-    Bindings: {}; // For Cloudflare Bindings, empty for now
-    Variables: {}; // For Hono context variables, empty for now
+    Bindings: AppEnv;
+    Variables: {}; // For Hono context variables, can be extended if needed
 };
 
-const storageRoutes = new OpenAPIHono<{ Bindings: Env['Bindings'], Variables: Env['Variables'] }>();
+const storageRoutes = new OpenAPIHono<Env>();
 
 // Define the POST /storage route
 const uploadObjectRoute = createRoute({
