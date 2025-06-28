@@ -91,7 +91,7 @@ export const generateArticleHandler = async (
       c.executionCtx.waitUntil(processAndCompleteTask());
       ranWithWaitUntil = true;
     }
-  } catch (e) {
+  } catch {
     // This catch block is expected in environments like Node.js where c.executionCtx is not available.
     // console.info('c.executionCtx.waitUntil is not available or access failed. Proceeding with standard async execution.'); // Optional: for debugging
   }

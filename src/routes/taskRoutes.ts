@@ -1,20 +1,17 @@
 import { OpenAPIHono } from '@hono/zod-openapi';
-import { TaskRoute, ListTasksRoute } from '../schemas/taskSchemas.js';
+import { getTaskRoute, listTasksRoute } from '../schemas/taskSchemas.js';
 import { getTaskHandler } from '../handlers/tasks/getTaskHandler.js';
 import { listTasksHandler } from '../handlers/tasks/listTasksHandler.js';
-import { bearerAuth } from '../middlewares/auth.js'; // Assuming your auth middleware is in 'middlewares/auth.ts'
+import { bearerAuth } from '../middlewares/auth.js';
 
-// Following the pattern from geminiRoutes.ts and memory cbdd0f3c
 const taskRoutes = new OpenAPIHono<{ Variables: {} }>();
 
 // GET /tasks - List all tasks
-// Apply bearerAuth middleware. No zValidator for request body needed for GET.
-taskRoutes.use(ListTasksRoute.path, bearerAuth);
-taskRoutes.openapi(ListTasksRoute, listTasksHandler);
+taskRoutes.use(listTasksRoute.path, bearerAuth);
+taskRoutes.openapi(listTasksRoute, listTasksHandler);
 
 // GET /tasks/{taskId} - Get task status
-// Apply bearerAuth middleware. Path parameters are validated by the TaskRoute schema.
-taskRoutes.use(TaskRoute.path, bearerAuth);
-taskRoutes.openapi(TaskRoute, getTaskHandler);
+taskRoutes.use(getTaskRoute.path, bearerAuth);
+taskRoutes.openapi(getTaskRoute, getTaskHandler);
 
 export default taskRoutes;

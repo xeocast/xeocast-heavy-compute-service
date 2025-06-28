@@ -18,7 +18,7 @@ export const ErrorSchema = z.object({
 }).openapi('Error');
 
 export const TaskCreationResponseSchema = z.object({
-  taskId: z.string(),
+  taskId: z.string().uuid(),
   message: z.string(),
 }).openapi('TaskCreationResponse');
 
@@ -43,7 +43,17 @@ export const generateArticleRoute = createRoute({
           schema: TaskCreationResponseSchema,
         },
       },
-      description: 'Task created successfully and is being processed',
+      description: 'Task accepted. Poll the linked endpoint to check for completion. The final result will conform to the `GenerateArticleResponse` schema.',
+      links: {
+        getTaskStatus: {
+          operationId: 'getTaskStatus',
+          parameters: {
+            taskId: '$response.body#/taskId',
+          },
+          description:
+            'A link to poll the status of the created task. The `taskId` from this response body is used as the `taskId` path parameter in the /tasks/{taskId} endpoint.',
+        },
+      },
     },
     400: {
       description: 'Bad Request: Invalid input',

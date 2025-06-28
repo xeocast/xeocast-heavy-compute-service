@@ -1,23 +1,33 @@
+import { z } from 'zod';
 import { Context } from 'hono';
-import { HTTPException } from 'hono/http-exception';
+import type { RouteConfigToTypedResponse } from '@hono/zod-openapi';
 import { getTaskById } from '../../services/taskService.js';
-import { GetTaskPathParamsSchema } from '../../schemas/taskSchemas.js'; // For param validation
+import {
+  getTaskRoute,
+  GetTaskPathParamsSchema,
+} from '../../schemas/taskSchemas.js';
 
-export const getTaskHandler = async (c: Context<{ Variables: {} }>) => {
-  const paramData = { taskId: c.req.param('taskId') };
-  const parsedParams = GetTaskPathParamsSchema.safeParse(paramData);
-
-  if (!parsedParams.success) {
-    throw new HTTPException(400, { message: 'Invalid taskId format' });
-  }
-  const taskId = parsedParams.data.taskId;
+export const getTaskHandler = async (
+  c: Context<
+    { Variables: {} },
+    typeof getTaskRoute.path,
+    { out: { param: z.infer<typeof GetTaskPathParamsSchema> } }
+  >
+): Promise<RouteConfigToTypedResponse<typeof getTaskRoute>> => {
+  const { taskId } = c.req.valid('param');
 
   const task = getTaskById(taskId);
 
   if (!task) {
-    // TaskRoute schema expects { error: string } for 404
+    // The 404 response schema is defined in `getTaskRoute`
     return c.json({ error: 'Task not found' }, 404);
   }
 
-  return c.json(task, 200);
+  // The `task` object from the service is generic. The route schema expects a
+  // discriminated union based on the task's status and result type.
+  // We cast to `any` here as a pragmatic step to satisfy TypeScript.
+  // This allows the OpenAPI docs to correctly show the linked schemas and all
+  // possible result structures, even though the runtime object from our simple
+  // task service is a more generic shape.
+  return c.json(task as any, 200);
 };
