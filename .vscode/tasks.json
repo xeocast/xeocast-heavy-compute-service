@@ -1,0 +1,31 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Check Types (All Files)",
+			"type": "shell",
+			"command": "pnpm typecheck",
+			"group": "build",
+			"problemMatcher": {
+				"base": "$tsc"
+			},
+			"presentation": {
+				"reveal": "never",
+				"clear": true
+			}
+		},
+		{
+			"label": "Lint with Oxc (All Files)",
+			"type": "shell",
+			"command": "pnpm lint --format=stylish",
+			"group": "build",
+			"problemMatcher": [
+				"$eslint-stylish"
+			],
+			"presentation": {
+				"reveal": "never",
+				"clear": true
+			}
+		}
+	]
+}
