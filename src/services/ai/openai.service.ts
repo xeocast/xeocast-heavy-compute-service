@@ -15,3 +15,8 @@ export async function generateStructuredMetadataWithGPT(taskId: string, _prompt:
 export async function generateStructuredTitlesWithGPT(taskId: string, _prompt: string, _requestedModel?: string) {
     updateTask(taskId, 'FAILED', { error: { message: 'Structured titles generation not yet implemented for OpenAI' } });
 }
+
+export async function generateVideoWithGPT(taskId: string, prompt: string, requestedModel?: string) {
+    console.log(`Task ${taskId}: Generating video with OpenAI for prompt: ${prompt}, model: ${requestedModel}`);
+    updateTask(taskId, 'FAILED', { error: { message: 'OpenAI video generation not yet implemented' } });
+}

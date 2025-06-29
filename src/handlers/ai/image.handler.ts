@@ -1,51 +1,74 @@
-import { z } from 'zod';
 import type { Context } from 'hono';
+import type { RouteConfigToTypedResponse } from '@hono/zod-openapi';
 import {
-  BaseAIRequestSchema,
-  ImageResponseSchema,
+  InferredImageRequest,
 } from '../../schemas/ai.schemas.js';
-import { GoogleGenAI } from '@google/genai';
+import { createTask, updateTask } from '../../services/task.service.js';
+import { generateImageWithGemini } from '../../services/ai/google.service.js';
 import { imageRoute } from '../../routes/ai.routes.js';
 
 export const generateImageHandler = async (
   c: Context<
     { Variables: {} },
     typeof imageRoute.path,
-    { out: { json: z.infer<typeof BaseAIRequestSchema> } }
+    { out: { json: InferredImageRequest } }
   >
-) => {
-  const validatedBody = (c.req as any).valid('json') as z.infer<typeof BaseAIRequestSchema>;
+): Promise<RouteConfigToTypedResponse<typeof imageRoute>> => {
+  const validatedBody = (c.req as any).valid('json') as InferredImageRequest;
 
   if (!validatedBody) {
-    return c.json({ error: 'Invalid request body' }, 400);
+    return c.json({ error: 'Invalid request body' }, 400) as any;
   }
 
-  const { prompt } = validatedBody;
+  const { prompt, model: requestedModel, provider } = validatedBody;
 
-  // Check if GEMINI_API_KEY is set.
-  if (!process.env.GEMINI_API_KEY) {
-    return c.json({ error: 'GEMINI_API_KEY is not configured' }, 500);
+  const taskId = createTask({ prompt, model: requestedModel, provider });
+
+  c.res = c.json({ taskId: taskId, message: "Image generation task created and processing started." }, 202);
+
+  const processAndCompleteTask = async () => {
+    try {
+      updateTask(taskId, 'PROCESSING');
+
+      switch (provider) {
+        case 'google':
+          await generateImageWithGemini(taskId, prompt, requestedModel);
+          break;
+        default:
+          updateTask(taskId, 'FAILED', { error: { message: `Unsupported AI provider: ${provider}` } });
+          break;
+      }
+    } catch (error: any) {
+      console.error(`Task ${taskId}: Unhandled error in background task execution:`, error);
+      updateTask(taskId, 'FAILED', {
+        error: {
+          message: 'Unhandled exception in background processing.',
+          details: error.stack || error.toString(),
+        },
+      });
+    }
+  };
+
+  let ranWithWaitUntil = false;
+  try {
+    if (c.executionCtx && typeof c.executionCtx.waitUntil === 'function') {
+      c.executionCtx.waitUntil(processAndCompleteTask());
+      ranWithWaitUntil = true;
+    }
+  } catch {
   }
 
-  const genAI = new GoogleGenAI({
-    apiKey: process.env.GEMINI_API_KEY,
-  });
-
-  const aiResponse = await genAI.models.generateContent({
-    model: "gemini-2.0-flash",
-    contents: prompt,
-  });
-
-
-  const generatedText = aiResponse.text;
-
-  if (!generatedText) {
-    return c.json({ error: 'Failed to generate content' }, 500);
+  if (!ranWithWaitUntil) {
+    processAndCompleteTask().catch(err => {
+      console.error(`Task ${taskId}: Unhandled error in background task execution:`, err);
+      updateTask(taskId, 'FAILED', {
+        error: {
+          message: 'Unhandled exception in background processing.',
+          details: err.stack || err.toString(),
+        },
+      });
+    });
   }
   
-  const response: z.infer<typeof ImageResponseSchema> = {
-    imageUrl: `https://example.com/placeholder-thumbnail-for-prompt.png`,
-    status: 'success',
-  };
-  return c.json(response, 200);
+  return c.res as any;
 };

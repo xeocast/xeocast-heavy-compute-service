@@ -6,7 +6,8 @@ import {
   TaskCreationResponseSchema,
   BaseAIRequestSchema,
   TextRequestSchema,
-  ImageResponseSchema,
+  ImageRequestSchema,
+  VideoRequestSchema,
   VideoResponseSchema,
   MultiSpeakerSpeechRequestSchema,
   SingleSpeakerSpeechRequestSchema,
@@ -106,27 +107,65 @@ export const imageRoute = createRoute({
     body: {
       content: {
         'application/json': {
-          schema: BaseAIRequestSchema, // Prompt for image generation
+          schema: ImageRequestSchema, // Prompt for image generation
         },
       },
-      description: 'Prompt for generating a thumbnail image',
+      description: 'Prompt for generating an image',
     },
   },
   responses: {
-    200: {
+    202: {
       content: {
-        'application/json': { 
-          schema: ImageResponseSchema,
+        'application/json': {
+          schema: TaskCreationResponseSchema,
         },
       },
-      description: 'Thumbnail image generated successfully',
+      description: 'Task accepted. Poll the linked endpoint to check for completion. The final result will conform to the `ImageResponse` schema.',
+      links: {
+        getTaskStatus: {
+          operationId: 'getTaskStatus',
+          parameters: {
+            taskId: '$response.body#/taskId',
+          },
+          description:
+            'A link to poll the status of the created task. The `taskId` from this response body is used as the `taskId` path parameter in the /tasks/{taskId} endpoint.',
+        },
+      },
     },
-    400: { description: 'Bad Request', content: { 'application/json': { schema: ErrorSchema } } },
-    401: { description: 'Unauthorized', content: { 'application/json': { schema: ErrorSchema } } },
-    403: { description: 'Forbidden', content: { 'application/json': { schema: ErrorSchema } } },
-    500: { description: 'Internal Server Error', content: { 'application/json': { schema: ErrorSchema } } },
+    400: {
+      description: 'Bad Request: Invalid input',
+      content: {
+        'application/json': {
+          schema: ErrorSchema,
+        },
+      },
+    },
+    401: {
+      description: 'Unauthorized: Missing or invalid token format',
+      content: {
+        'application/json': {
+          schema: ErrorSchema,
+        },
+      },
+    },
+    403: {
+      description: 'Forbidden: Invalid token',
+      content: {
+        'application/json': {
+          schema: ErrorSchema,
+        },
+      },
+    },
+    500: {
+      description: 'Internal Server Error',
+      content: {
+        'application/json': {
+          schema: ErrorSchema,
+        },
+      },
+    },
   },
-  summary: 'Generate a thumbnail image',
+  summary: 'Generate an image using a prompt',
   tags: ['AI'],
 });
 
@@ -138,25 +177,63 @@ export const videoRoute = createRoute({
     body: {
       content: {
         'application/json': {
-          schema: BaseAIRequestSchema, // Prompt for video generation
+          schema: VideoRequestSchema, // Prompt for video generation
         },
       },
       description: 'Prompt for generating video',
     },
   },
   responses: {
-    200: {
+    202: {
       content: {
         'application/json': {
-          schema: VideoResponseSchema,
+          schema: TaskCreationResponseSchema,
         },
       },
-      description: 'Video generated successfully',
+      description: 'Task accepted. Poll the linked endpoint to check for completion. The final result will conform to the `VideoResponse` schema.',
+      links: {
+        getTaskStatus: {
+          operationId: 'getTaskStatus',
+          parameters: {
+            taskId: '$response.body#/taskId',
+          },
+          description:
+            'A link to poll the status of the created task. The `taskId` from this response body is used as the `taskId` path parameter in the /tasks/{taskId} endpoint.',
+        },
+      },
     },
-    400: { description: 'Bad Request', content: { 'application/json': { schema: ErrorSchema } } },
-    401: { description: 'Unauthorized', content: { 'application/json': { schema: ErrorSchema } } },
-    403: { description: 'Forbidden', content: { 'application/json': { schema: ErrorSchema } } },
-    500: { description: 'Internal Server Error', content: { 'application/json': { schema: ErrorSchema } } },
+    400: {
+      description: 'Bad Request: Invalid input',
+      content: {
+        'application/json': {
+          schema: ErrorSchema,
+        },
+      },
+    },
+    401: {
+      description: 'Unauthorized: Missing or invalid token format',
+      content: {
+        'application/json': {
+          schema: ErrorSchema,
+        },
+      },
+    },
+    403: {
+      description: 'Forbidden: Invalid token',
+      content: {
+        'application/json': {
+          schema: ErrorSchema,
+        },
+      },
+    },
+    500: {
+      description: 'Internal Server Error',
+      content: {
+        'application/json': {
+          schema: ErrorSchema,
+        },
+      },
+    },
   },
   summary: 'Generate video',
   tags: ['AI'],

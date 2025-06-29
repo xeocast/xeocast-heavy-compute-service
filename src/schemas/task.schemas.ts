@@ -6,6 +6,7 @@ import {
   MultiSpeakerSpeechResponseSchema,
   ImageResponseSchema,
   MusicResponseSchema,
+  VideoResponseSchema,
   BaseAIResponseSchema,
 } from './ai.schemas.js';
 
@@ -117,6 +118,17 @@ export const CompletedGenerateMusicTaskSchema = z
   })
   .openapi('CompletedGenerateMusicTask');
 
+export const CompletedGenerateVideoTaskSchema = z
+  .object({
+    id: z.string().uuid(),
+    status: z.literal('COMPLETED'),
+    createdAt: z.string().datetime(),
+    updatedAt: z.string().datetime(),
+    input: z.any().optional(),
+    result: VideoResponseSchema,
+  })
+  .openapi('CompletedGenerateVideoTask');
+
 // A specific schema for other completed Gemini tasks
 export const CompletedBaseGeminiTaskSchema = z
   .object({
@@ -141,6 +153,7 @@ export const TaskUnionSchema = z.union([
   CompletedGenerateAudioTaskSchema,
   CompletedGenerateImageTaskSchema,
   CompletedGenerateMusicTaskSchema,
+  CompletedGenerateVideoTaskSchema,
   CompletedBaseGeminiTaskSchema,
 ]).openapi('Task');
 

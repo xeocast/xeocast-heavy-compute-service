@@ -13,6 +13,14 @@ export const TextResponseSchema = z.object({
   status: z.string(),
 }).openapi('TextResponse');
 
+export const VideoRequestSchema = z.object({
+  prompt: z.string().min(1, { message: 'Prompt cannot be empty' }),
+  model: z.string().optional(),
+  provider: z.enum(['google', 'xai', 'openai', 'anthropic']).optional().default('google'),
+}).openapi('VideoRequest');
+
+export type InferredVideoRequest = z.infer<typeof VideoRequestSchema>;
+
 export const ErrorSchema = z.object({
   error: z.string(),
 }).openapi('Error');
@@ -27,6 +35,12 @@ export const BaseAIRequestSchema = z.object({
   prompt: z.string().min(1, { message: 'Prompt cannot be empty' }),
   model: z.string().optional(),
 }).openapi('BaseAIRequest');
+
+export const ImageRequestSchema = BaseAIRequestSchema.extend({
+  provider: z.enum(['google', 'xai', 'openai', 'anthropic']).optional().default('google'),
+}).openapi('ImageRequest');
+
+export type InferredImageRequest = z.infer<typeof ImageRequestSchema>;
 
 export const BaseAIResponseSchema = z.object({
   result: z.string(), // Generic result field
