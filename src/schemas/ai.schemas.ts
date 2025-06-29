@@ -112,3 +112,17 @@ export const StructuredMetadataResponseSchema = z.object({
   }),
   status: z.string(),
 }).openapi('StructuredMetadataResponse');
+
+export const SingleSpeakerSpeechRequestSchema = z.object({
+  text: z.string().min(1, { message: 'Text cannot be empty' }),
+  model: z.string().optional(),
+  output_bucket_key: z.string().optional().describe('The R2 bucket key where the generated audio should be stored.'),
+}).openapi('SingleSpeakerSpeechRequest');
+
+export type InferredSingleSpeakerSpeechRequest = z.infer<typeof SingleSpeakerSpeechRequestSchema>;
+
+export const SingleSpeakerSpeechResponseSchema = z.object({
+  bucketKey: z.string().describe('The R2 bucket key where the audio file is stored.'),
+  mimeType: z.string().describe('The MIME type of the generated audio file.'),
+  status: z.string(),
+}).openapi('SingleSpeakerSpeechResponse');

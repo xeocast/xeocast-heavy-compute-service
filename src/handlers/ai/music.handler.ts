@@ -6,7 +6,7 @@ import {
 } from '../../schemas/ai.schemas.js';
 import { musicRoute } from '../../routes/ai.routes.js';
 
-export const musicHandler = async (
+export const generateMusicHandler = async (
   c: Context<
     { Variables: {} },
     typeof musicRoute.path,

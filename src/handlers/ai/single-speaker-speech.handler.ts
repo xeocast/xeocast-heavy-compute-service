@@ -1,28 +1,32 @@
 import { z } from 'zod';
 import type { Context } from 'hono';
 import {
-  BaseAIRequestSchema,
-  MusicResponseSchema,
+  SingleSpeakerSpeechRequestSchema,
+  SingleSpeakerSpeechResponseSchema,
 } from '../../schemas/ai.schemas.js';
-import { musicRoute } from '../../routes/ai.routes.js';
+import { singleSpeakerSpeechRoute } from '../../routes/ai.routes.js';
 
-export const generateBackgroundMusicHandler = async (
+export const generateSingleSpeakerSpeechHandler = async (
   c: Context<
     { Variables: {} },
-    typeof musicRoute.path,
-    { out: { json: z.infer<typeof BaseAIRequestSchema> } }
+    typeof singleSpeakerSpeechRoute.path,
+    { out: { json: z.infer<typeof SingleSpeakerSpeechRequestSchema> } }
   >
 ) => {
-  const validatedBody = (c.req as any).valid('json') as z.infer<typeof BaseAIRequestSchema>;
+  const validatedBody = (c.req as any).valid('json') as z.infer<typeof SingleSpeakerSpeechRequestSchema>;
 
   if (!validatedBody) {
     return c.json({ error: 'Invalid request body' }, 400);
   }
 
-  // const { prompt } = validatedBody;
+  const { text, model, output_bucket_key } = validatedBody;
 
-  const response: z.infer<typeof MusicResponseSchema> = {
-    audioUrl: `https://example.com/placeholder-background-music-for-prompt.mp3`,
+  // Placeholder for actual speech generation logic
+  console.log(`Generating single speaker speech for text: ${text} with model: ${model || 'default'} and output_bucket_key: ${output_bucket_key || 'not provided'}`);
+
+  const response: z.infer<typeof SingleSpeakerSpeechResponseSchema> = {
+    bucketKey: `placeholder-single-speaker-speech-${Date.now()}.mp3`,
+    mimeType: 'audio/mpeg',
     status: 'success',
   };
   return c.json(response, 200);

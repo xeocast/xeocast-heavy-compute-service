@@ -2,31 +2,32 @@ import { OpenAPIHono } from '@hono/zod-openapi';
 import { zValidator } from '@hono/zod-validator';
 import { createRoute } from '@hono/zod-openapi';
 import {
-  TextRequestSchema,
   ErrorSchema,
   TaskCreationResponseSchema,
-  // New Schemas
-  BaseAIRequestSchema, // For most new routes
-  MultiSpeakerSpeechRequestSchema, // Specific for multi-speaker speech
-  StructuredScriptRequestSchema,
+  BaseAIRequestSchema,
+  TextRequestSchema,
+  ImageResponseSchema,
+  VideoResponseSchema,
+  MultiSpeakerSpeechRequestSchema,
+  SingleSpeakerSpeechRequestSchema,
+  SingleSpeakerSpeechResponseSchema,
+  MusicResponseSchema,
   StructuredTitlesRequestSchema,
   StructuredTitlesResponseSchema,
   StructuredMetadataRequestSchema,
   StructuredMetadataResponseSchema,
-  ImageResponseSchema,
-  MusicResponseSchema,
-  VideoResponseSchema,
+  StructuredScriptRequestSchema,
 
 } from '../schemas/ai.schemas.js';
-import { textHandler } from '../handlers/ai/text.handler.js';
-// New Handlers
-import { titlesHandler } from '../handlers/ai/structured/titles.handler.js';
-import { generateStructuredMetadataHandler } from '../handlers/ai/structured/metadata.handler.js';
-import { scriptHandler } from '../handlers/ai/structured/script.handler.js';
+import { generateTextHandler } from '../handlers/ai/text.handler.js';
+import { generateImageHandler } from '../handlers/ai/image.handler.js';
+import { generateVideoHandler } from '../handlers/ai/video.handler.js';
+import { generateSingleSpeakerSpeechHandler } from '../handlers/ai/single-speaker-speech.handler.js';
 import { generateMultiSpeakerSpeechHandler } from '../handlers/ai/multi-speaker-speech.js';
-import { imageHandler } from '../handlers/ai/image.handler.js';
-import { musicHandler } from '../handlers/ai/music.handler.js';
-import { videoHandler } from '../handlers/ai/video.handler.js';
+import { generateMusicHandler } from '../handlers/ai/music.handler.js';
+import { generateStructuredTitlesHandler } from '../handlers/ai/structured/titles.handler.js';
+import { generateStructuredMetadataHandler } from '../handlers/ai/structured/metadata.handler.js';
+import { generateStructuredScriptHandler } from '../handlers/ai/structured/script.handler.js';
 import { bearerAuth } from '../middlewares/auth.js';
 
 // POST /ai/text
@@ -99,38 +100,6 @@ export const textRoute = createRoute({
   tags: ['AI'],
 });
 
-// POST /ai/multi-speaker-speech
-export const generateMultiSpeakerSpeechRoute = createRoute({
-  method: 'post',
-  path: '/multi-speaker-speech',
-  request: {
-    body: {
-      content: {
-        'application/json': {
-          schema: MultiSpeakerSpeechRequestSchema, // Uses updated schema with optional model
-        },
-      },
-      description: 'Script and optional model for audio generation',
-    },
-  },
-  responses: {
-    202: { // Changed from 200 to 202 for async task creation
-      content: {
-        'application/json': {
-          schema: TaskCreationResponseSchema, // Response is now taskId and message
-        },
-      },
-      description: 'Multi-speaker speech generation task created and processing started. The actual audio (GenerateMultiSpeakerSpeechResponseSchema) will be available via the task status endpoint once completed.',
-    },
-    400: { description: 'Bad Request', content: { 'application/json': { schema: ErrorSchema } } },
-    401: { description: 'Unauthorized', content: { 'application/json': { schema: ErrorSchema } } },
-    403: { description: 'Forbidden', content: { 'application/json': { schema: ErrorSchema } } },
-    500: { description: 'Internal Server Error', content: { 'application/json': { schema: ErrorSchema } } },
-  },
-  summary: 'Initiate generation of multi-speaker speech from script (asynchronous)',
-  tags: ['AI'],
-});
-
 // POST /ai/image
 export const imageRoute = createRoute({
   method: 'post',
@@ -163,6 +132,102 @@ export const imageRoute = createRoute({
   tags: ['AI'],
 });
 
+// POST /ai/video
+export const videoRoute = createRoute({
+  method: 'post',
+  path: '/video',
+  request: {
+    body: {
+      content: {
+        'application/json': {
+          schema: BaseAIRequestSchema, // Prompt for video generation
+        },
+      },
+      description: 'Prompt for generating video',
+    },
+  },
+  responses: {
+    200: {
+      content: {
+        'application/json': {
+          schema: VideoResponseSchema,
+        },
+      },
+      description: 'Video generated successfully',
+    },
+    400: { description: 'Bad Request', content: { 'application/json': { schema: ErrorSchema } } },
+    401: { description: 'Unauthorized', content: { 'application/json': { schema: ErrorSchema } } },
+    403: { description: 'Forbidden', content: { 'application/json': { schema: ErrorSchema } } },
+    500: { description: 'Internal Server Error', content: { 'application/json': { schema: ErrorSchema } } },
+  },
+  summary: 'Generate video',
+  tags: ['AI'],
+});
+
+// POST /ai/single-speaker-speech
+export const singleSpeakerSpeechRoute = createRoute({
+  method: 'post',
+  path: '/single-speaker-speech',
+  request: {
+    body: {
+      content: {
+        'application/json': {
+          schema: SingleSpeakerSpeechRequestSchema,
+        },
+      },
+      description: 'Text and optional model for single speaker speech generation',
+    },
+  },
+  responses: {
+    200: {
+      content: {
+        'application/json': {
+          schema: SingleSpeakerSpeechResponseSchema,
+        },
+      },
+      description: 'Single speaker speech generated successfully',
+    },
+    400: { description: 'Bad Request', content: { 'application/json': { schema: ErrorSchema } } },
+    401: { description: 'Unauthorized', content: { 'application/json': { schema: ErrorSchema } } },
+    403: { description: 'Forbidden', content: { 'application/json': { schema: ErrorSchema } } },
+    500: { description: 'Internal Server Error', content: { 'application/json': { schema: ErrorSchema } } },
+  },
+  summary: 'Generate single speaker speech',
+  tags: ['AI'],
+});
+
+// POST /ai/multi-speaker-speech
+export const multiSpeakerSpeechRoute = createRoute({
+  method: 'post',
+  path: '/multi-speaker-speech',
+  request: {
+    body: {
+      content: {
+        'application/json': {
+          schema: MultiSpeakerSpeechRequestSchema, // Uses updated schema with optional model
+        },
+      },
+      description: 'Script and optional model for audio generation',
+    },
+  },
+  responses: {
+    202: { // Changed from 200 to 202 for async task creation
+      content: {
+        'application/json': {
+          schema: TaskCreationResponseSchema, // Response is now taskId and message
+        },
+      },
+      description: 'Multi-speaker speech generation task created and processing started. The actual audio (GenerateMultiSpeakerSpeechResponseSchema) will be available via the task status endpoint once completed.',
+    },
+    400: { description: 'Bad Request', content: { 'application/json': { schema: ErrorSchema } } },
+    401: { description: 'Unauthorized', content: { 'application/json': { schema: ErrorSchema } } },
+    403: { description: 'Forbidden', content: { 'application/json': { schema: ErrorSchema } } },
+    500: { description: 'Internal Server Error', content: { 'application/json': { schema: ErrorSchema } } },
+  },
+  summary: 'Initiate generation of multi-speaker speech from script (asynchronous)',
+  tags: ['AI'],
+});
+
 // POST /gemini/generate-background-music
 export const musicRoute = createRoute({
   method: 'post',
@@ -192,37 +257,6 @@ export const musicRoute = createRoute({
     500: { description: 'Internal Server Error', content: { 'application/json': { schema: ErrorSchema } } },
   },
   summary: 'Generate music',
-  tags: ['AI'],
-});
-
-export const videoRoute = createRoute({
-  method: 'post',
-  path: '/video',
-  request: {
-    body: {
-      content: {
-        'application/json': {
-          schema: BaseAIRequestSchema, // Prompt for video generation
-        },
-      },
-      description: 'Prompt for generating video',
-    },
-  },
-  responses: {
-    200: {
-      content: {
-        'application/json': {
-          schema: VideoResponseSchema,
-        },
-      },
-      description: 'Video generated successfully',
-    },
-    400: { description: 'Bad Request', content: { 'application/json': { schema: ErrorSchema } } },
-    401: { description: 'Unauthorized', content: { 'application/json': { schema: ErrorSchema } } },
-    403: { description: 'Forbidden', content: { 'application/json': { schema: ErrorSchema } } },
-    500: { description: 'Internal Server Error', content: { 'application/json': { schema: ErrorSchema } } },
-  },
-  summary: 'Generate video',
   tags: ['AI'],
 });
 
@@ -328,14 +362,15 @@ export const aiRoutes = new OpenAPIHono<{ Variables: {} }>();
 
 // Helper array for applying middlewares
 const newRouteConfigs = [
-  { route: structuredTitlesRoute, handler: titlesHandler, requestSchema: StructuredTitlesRequestSchema },
-  { route: textRoute, handler: textHandler, requestSchema: TextRequestSchema },
+  { route: textRoute, handler: generateTextHandler, requestSchema: TextRequestSchema },
+  { route: imageRoute, handler: generateImageHandler, requestSchema: BaseAIRequestSchema },
+  { route: videoRoute, handler: generateVideoHandler, requestSchema: BaseAIRequestSchema },
+  { route: singleSpeakerSpeechRoute, handler: generateSingleSpeakerSpeechHandler, requestSchema: SingleSpeakerSpeechRequestSchema },
+  { route: multiSpeakerSpeechRoute, handler: generateMultiSpeakerSpeechHandler, requestSchema: MultiSpeakerSpeechRequestSchema },
+  { route: musicRoute, handler: generateMusicHandler, requestSchema: BaseAIRequestSchema },
+  { route: structuredTitlesRoute, handler: generateStructuredTitlesHandler, requestSchema: StructuredTitlesRequestSchema },
   { route: structuredMetadataRoute, handler: generateStructuredMetadataHandler, requestSchema: StructuredMetadataRequestSchema },
-  { route: structuredScriptRoute, handler: scriptHandler, requestSchema: StructuredScriptRequestSchema },
-  { route: generateMultiSpeakerSpeechRoute, handler: generateMultiSpeakerSpeechHandler, requestSchema: MultiSpeakerSpeechRequestSchema },
-  { route: imageRoute, handler: imageHandler, requestSchema: BaseAIRequestSchema },
-  { route: musicRoute, handler: musicHandler, requestSchema: BaseAIRequestSchema },
-  { route: videoRoute, handler: videoHandler, requestSchema: BaseAIRequestSchema },
+  { route: structuredScriptRoute, handler: generateStructuredScriptHandler, requestSchema: StructuredScriptRequestSchema },
 ];
 
 // Apply middlewares in a loop
@@ -345,13 +380,14 @@ newRouteConfigs.forEach(({ route, requestSchema }) => {
 });
 
 // Define OpenAPI routes individually for type safety
-aiRoutes.openapi(textRoute, textHandler);
-aiRoutes.openapi(imageRoute, imageHandler);
-aiRoutes.openapi(videoRoute, videoHandler);
-aiRoutes.openapi(generateMultiSpeakerSpeechRoute, generateMultiSpeakerSpeechHandler);
-aiRoutes.openapi(musicRoute, musicHandler);
-aiRoutes.openapi(structuredTitlesRoute, titlesHandler);
+aiRoutes.openapi(textRoute, generateTextHandler);
+aiRoutes.openapi(imageRoute, generateImageHandler);
+aiRoutes.openapi(videoRoute, generateVideoHandler);
+aiRoutes.openapi(singleSpeakerSpeechRoute, generateSingleSpeakerSpeechHandler);
+aiRoutes.openapi(multiSpeakerSpeechRoute, generateMultiSpeakerSpeechHandler);
+aiRoutes.openapi(musicRoute, generateMusicHandler);
+aiRoutes.openapi(structuredTitlesRoute, generateStructuredTitlesHandler);
 aiRoutes.openapi(structuredMetadataRoute, generateStructuredMetadataHandler);
-aiRoutes.openapi(structuredScriptRoute, scriptHandler);
+aiRoutes.openapi(structuredScriptRoute, generateStructuredScriptHandler);
 
 export default aiRoutes;

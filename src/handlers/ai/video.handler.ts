@@ -6,7 +6,7 @@ import {
 } from '../../schemas/ai.schemas.js';
 import { videoRoute } from '../../routes/ai.routes.js';
 
-export const videoHandler = async (
+export const generateVideoHandler = async (
   c: Context<
     { Variables: {} },
     typeof videoRoute.path,

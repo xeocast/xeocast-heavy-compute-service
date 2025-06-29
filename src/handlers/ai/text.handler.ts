@@ -11,7 +11,7 @@ import { createTask, updateTask } from '../../services/task.service.js';
 import { textRoute } from '../../routes/ai.routes.js';
 
 // This is a skeleton handler. Implement the actual Gemini API call here.
-export const textHandler = async (
+export const generateTextHandler = async (
   c: Context<
     { Variables: {} }, // Environment type, can be more specific if needed
     typeof textRoute.path, // Path from your route definition

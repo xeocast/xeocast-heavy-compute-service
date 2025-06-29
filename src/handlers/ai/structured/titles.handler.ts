@@ -8,7 +8,7 @@ import {
 import { structuredTitlesRoute } from '../../../routes/ai.routes.js';
 import { GoogleGenAI, Type } from '@google/genai';
 
-export const titlesHandler = async (
+export const generateStructuredTitlesHandler = async (
   c: Context<
     { Variables: {} },
     typeof structuredTitlesRoute.path,

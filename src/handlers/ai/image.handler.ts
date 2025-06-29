@@ -7,7 +7,7 @@ import {
 import { GoogleGenAI } from '@google/genai';
 import { imageRoute } from '../../routes/ai.routes.js';
 
-export const imageHandler = async (
+export const generateImageHandler = async (
   c: Context<
     { Variables: {} },
     typeof imageRoute.path,

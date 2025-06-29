@@ -9,7 +9,7 @@ import { createTask, updateTask } from '../../../services/task.service.js';
 // Define the type for the input based on the Zod schema
 type InferredGenerateStructuredScriptRequest = z.infer<typeof StructuredScriptRequestSchema>;
 
-export const scriptHandler = async (
+export const generateStructuredScriptHandler = async (
   c: Context<
     { Variables: {} }, // Environment type
     typeof structuredScriptRoute.path, // Path from route definition

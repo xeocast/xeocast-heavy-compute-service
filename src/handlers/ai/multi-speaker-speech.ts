@@ -11,7 +11,7 @@ import { createTask, updateTask } from '../../services/task.service.js';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import { Writer } from 'wav';
 import { type Part, type GenerationConfig, Modality } from '@google/genai'; // Added Modality
-import { generateMultiSpeakerSpeechRoute } from '../../routes/ai.routes.js';
+import { multiSpeakerSpeechRoute } from '../../routes/ai.routes.js';
 
 // R2 Client (initialized later if credentials are valid)
 let r2Client: S3Client | undefined;
@@ -40,10 +40,10 @@ const initializeR2Client = () => {
 export const generateMultiSpeakerSpeechHandler = async (
   c: Context<
     { Variables: {} },
-    typeof generateMultiSpeakerSpeechRoute.path,
+    typeof multiSpeakerSpeechRoute.path,
     { out: { json: InferredMultiSpeakerSpeechRequest } }
   >
-): Promise<RouteConfigToTypedResponse<typeof generateMultiSpeakerSpeechRoute>> => {
+): Promise<RouteConfigToTypedResponse<typeof multiSpeakerSpeechRoute>> => {
   const validatedBody = (c.req as any).valid('json') as z.infer<typeof MultiSpeakerSpeechRequestSchema>;
 
   if (!validatedBody) {
