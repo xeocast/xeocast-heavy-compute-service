@@ -2,14 +2,14 @@ import { z } from 'zod';
 import type { Context } from 'hono';
 import {
   BaseAIRequestSchema,
-  GenerateMusicResponseSchema,
+  MusicResponseSchema,
 } from '../../schemas/ai.schemas.js';
-import { generateBackgroundMusicRoute } from '../../routes/ai.routes.js';
+import { musicRoute } from '../../routes/ai.routes.js';
 
 export const generateBackgroundMusicHandler = async (
   c: Context<
     { Variables: {} },
-    typeof generateBackgroundMusicRoute.path,
+    typeof musicRoute.path,
     { out: { json: z.infer<typeof BaseAIRequestSchema> } }
   >
 ) => {
@@ -21,7 +21,7 @@ export const generateBackgroundMusicHandler = async (
 
   // const { prompt } = validatedBody;
 
-  const response: z.infer<typeof GenerateMusicResponseSchema> = {
+  const response: z.infer<typeof MusicResponseSchema> = {
     audioUrl: `https://example.com/placeholder-background-music-for-prompt.mp3`,
     status: 'success',
   };

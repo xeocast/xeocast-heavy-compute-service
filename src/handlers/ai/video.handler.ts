@@ -2,7 +2,7 @@ import { z } from 'zod';
 import type { Context } from 'hono';
 import {
   BaseAIRequestSchema,
-  GenerateVideoResponseSchema,
+  VideoResponseSchema,
 } from '../../schemas/ai.schemas.js';
 import { videoRoute } from '../../routes/ai.routes.js';
 
@@ -21,7 +21,7 @@ export const videoHandler = async (
 
   // const { prompt } = validatedBody;
 
-  const response: z.infer<typeof GenerateVideoResponseSchema> = {
+  const response: z.infer<typeof VideoResponseSchema> = {
     videoUrl: `https://example.com/placeholder-video-for-prompt.mp4`,
     status: 'success',
   };

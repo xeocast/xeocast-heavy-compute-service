@@ -2,16 +2,16 @@ import { z } from 'zod';
 import type { Context } from 'hono';
 import type { RouteConfigToTypedResponse } from '@hono/zod-openapi';
 import {
-  GenerateEpisodeAudioRequestSchema,
-  type InferredGenerateEpisodeAudioRequest,
-  // GenerateEpisodeAudioResponseSchema is used for the task's result structure
+  MultiSpeakerSpeechRequestSchema,
+  type InferredMultiSpeakerSpeechRequest,
+  // GenerateMultiSpeakerSpeechResponseSchema is used for the task's result structure
 } from '../../schemas/ai.schemas.js';
 import { GoogleGenAI } from '@google/genai';
 import { createTask, updateTask } from '../../services/task.service.js';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import { Writer } from 'wav';
 import { type Part, type GenerationConfig, Modality } from '@google/genai'; // Added Modality
-import { generateEpisodeAudioRoute } from '../../routes/ai.routes.js';
+import { generateMultiSpeakerSpeechRoute } from '../../routes/ai.routes.js';
 
 // R2 Client (initialized later if credentials are valid)
 let r2Client: S3Client | undefined;
@@ -37,14 +37,14 @@ const initializeR2Client = () => {
   return r2Client;
 };
 
-export const generateEpisodeAudioHandler = async (
+export const generateMultiSpeakerSpeechHandler = async (
   c: Context<
     { Variables: {} },
-    typeof generateEpisodeAudioRoute.path,
-    { out: { json: InferredGenerateEpisodeAudioRequest } }
+    typeof generateMultiSpeakerSpeechRoute.path,
+    { out: { json: InferredMultiSpeakerSpeechRequest } }
   >
-): Promise<RouteConfigToTypedResponse<typeof generateEpisodeAudioRoute>> => {
-  const validatedBody = (c.req as any).valid('json') as z.infer<typeof GenerateEpisodeAudioRequestSchema>;
+): Promise<RouteConfigToTypedResponse<typeof generateMultiSpeakerSpeechRoute>> => {
+  const validatedBody = (c.req as any).valid('json') as z.infer<typeof MultiSpeakerSpeechRequestSchema>;
 
   if (!validatedBody) {
     return c.json({ error: 'Invalid request body' }, 400) as any;

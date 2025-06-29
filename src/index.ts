@@ -32,7 +32,7 @@ app.doc('/doc', {
   openapi: '3.0.0',
   info: {
     version: '1.0.0',
-    title: 'Xeocast Heavy Compute API',
+    title: 'XeoCast Heavy Compute API',
     description: 'API for heavy computation tasks.',
   },
   // You can add servers, security schemes, etc.

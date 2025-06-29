@@ -2,19 +2,19 @@ import { z } from 'zod';
 import type { Context } from 'hono';
 import { RouteConfigToTypedResponse } from '@hono/zod-openapi';
 import {
-  GenerateStructuredTitlesRequestSchema,
-  GenerateTitlesResponseSchema,
+  StructuredTitlesRequestSchema,
+  StructuredTitlesResponseSchema,
 } from '../../../schemas/ai.schemas.js';
-import { GenerateStructuredTitlesRoute } from '../../../routes/ai.routes.js';
+import { structuredTitlesRoute } from '../../../routes/ai.routes.js';
 import { GoogleGenAI, Type } from '@google/genai';
 
 export const titlesHandler = async (
   c: Context<
     { Variables: {} },
-    typeof GenerateStructuredTitlesRoute.path,
-    { out: { json: z.infer<typeof GenerateStructuredTitlesRequestSchema> } }
+    typeof structuredTitlesRoute.path,
+    { out: { json: z.infer<typeof StructuredTitlesRequestSchema> } }
   >
-): Promise<RouteConfigToTypedResponse<typeof GenerateStructuredTitlesRoute>> => {
+): Promise<RouteConfigToTypedResponse<typeof structuredTitlesRoute>> => {
   const { prompt, model } = c.req.valid('json');
 
   // Check if GEMINI_API_KEY is set.
@@ -68,7 +68,7 @@ export const titlesHandler = async (
     return c.json({ error: 'Generated metadata is not valid JSON' }, 500);
   }
 
-  const response: z.infer<typeof GenerateTitlesResponseSchema> = {
+  const response: z.infer<typeof StructuredTitlesResponseSchema> = {
     result: parsedResult,
     status: 'success',
   };

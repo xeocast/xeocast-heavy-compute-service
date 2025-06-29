@@ -2,7 +2,7 @@ import { z } from 'zod';
 import type { Context } from 'hono';
 import {
   BaseAIRequestSchema,
-  GenerateImageResponseSchema,
+  ImageResponseSchema,
 } from '../../schemas/ai.schemas.js';
 import { GoogleGenAI } from '@google/genai';
 import { imageRoute } from '../../routes/ai.routes.js';
@@ -43,7 +43,7 @@ export const imageHandler = async (
     return c.json({ error: 'Failed to generate content' }, 500);
   }
   
-  const response: z.infer<typeof GenerateImageResponseSchema> = {
+  const response: z.infer<typeof ImageResponseSchema> = {
     imageUrl: `https://example.com/placeholder-thumbnail-for-prompt.png`,
     status: 'success',
   };

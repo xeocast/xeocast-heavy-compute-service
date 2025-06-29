@@ -1,5 +1,4 @@
 import { z } from 'zod';
-import { createRoute } from '@hono/zod-openapi';
 
 export const TextRequestSchema = z.object({
   prompt: z.string().min(1, { message: 'Prompt cannot be empty' }),
@@ -34,43 +33,43 @@ export const BaseAIResponseSchema = z.object({
 }).openapi('BaseAIResponse');
 
 // Specific Schemas for certain Gemini Endpoints
-export const GenerateEpisodeAudioRequestSchema = z.object({ 
+export const MultiSpeakerSpeechRequestSchema = z.object({
   script: z.string().min(1, { message: 'Script cannot be empty' }),
   model: z.string().optional(), // Added optional model
   output_bucket_key: z.string().optional().describe('The R2 bucket key where the generated audio should be stored.'),
-}).openapi('GenerateEpisodeAudioRequest');
+}).openapi('MultiSpeakerSpeechRequest');
 
-export type InferredGenerateEpisodeAudioRequest = z.infer<typeof GenerateEpisodeAudioRequestSchema>;
+export type InferredMultiSpeakerSpeechRequest = z.infer<typeof MultiSpeakerSpeechRequestSchema>;
 
-export const GenerateEpisodeAudioResponseSchema = z.object({
+export const MultiSpeakerSpeechResponseSchema = z.object({
   bucketKey: z.string().describe('The R2 bucket key where the audio file is stored.'),
   mimeType: z.string().describe('The MIME type of the generated audio file.'),
   status: z.string(),
-}).openapi('GenerateEpisodeAudioResponse');
+}).openapi('MultiSpeakerSpeechResponse');
 
-export const GenerateImageResponseSchema = z.object({
+export const ImageResponseSchema = z.object({
   imageUrl: z.string().url({ message: 'Invalid URL format for imageUrl' }),
   status: z.string(),
-}).openapi('GenerateImageResponse');
+}).openapi('ImageResponse');
 
-export const GenerateMusicResponseSchema = z.object({
+export const MusicResponseSchema = z.object({
   audioUrl: z.string().url({ message: 'Invalid URL format for audioUrl' }), 
   status: z.string(),
-}).openapi('GenerateMusicResponse');
+}).openapi('MusicResponse');
 
-export const GenerateVideoResponseSchema = z.object({
+export const VideoResponseSchema = z.object({
   videoUrl: z.string().url({ message: 'Invalid URL format for videoUrl' }), 
   status: z.string(),
-}).openapi('GenerateVideoResponse');
+}).openapi('VideoResponse');
 
-// --- Specific Schemas for GenerateEpisodeScript ---
-export const GenerateStructuredScriptRequestSchema = z.object({
+// --- Specific Schemas for StructuredScript ---
+export const StructuredScriptRequestSchema = z.object({
   prompt: z.string().min(1, { message: 'Prompt cannot be empty' }),
   article: z.string().min(1, { message: 'Article content cannot be empty' }),
   model: z.string().optional(),
-}).openapi('GenerateStructuredScriptRequest');
+}).openapi('StructuredScriptRequest');
 
-export const GenerateStructuredScriptResponseSchema = z.object({
+export const StructuredScriptResponseSchema = z.object({
   result: z.array(
     z.object({
       speaker: z.string(),
@@ -78,10 +77,10 @@ export const GenerateStructuredScriptResponseSchema = z.object({
     }).required({ speaker: true, line: true })
   ),
   status: z.string(),
-}).openapi('GenerateStructuredScriptResponse');
+}).openapi('StructuredScriptResponse');
 
-// Specific Schemas for Titles
-export const GenerateTitlesResponseSchema = z.object({
+// Specific Schemas for StructuredTitles
+export const StructuredTitlesResponseSchema = z.object({
   result: z.array(
     z.object({
       title: z.string(),
@@ -89,22 +88,22 @@ export const GenerateTitlesResponseSchema = z.object({
     })
   ),
   status: z.string(),
-}).openapi('GenerateTitlesResponse');
+}).openapi('StructuredTitlesResponse');
 
 // POST /ai/structured/titles
-export const GenerateStructuredTitlesRequestSchema = z.object({
+export const StructuredTitlesRequestSchema = z.object({
   prompt: z.string().openapi({ example: 'How to learn to code' }),
   model: z.string().openapi({ example: 'gemini-1.5-pro-latest' }),
-}).openapi('GenerateStructuredTitlesRequest');
+}).openapi('StructuredTitlesRequest');
 
-// --- Specific Schemas for GenerateArticleMetadata ---
-export const GenerateStructuredMetadataRequestSchema = z.object({
+// --- Specific Schemas for StructuredMetadata ---
+export const StructuredMetadataRequestSchema = z.object({
   prompt: z.string().min(1, { message: 'Prompt cannot be empty' }),
   article: z.string().min(1, { message: 'Article content cannot be empty' }),
   model: z.string().optional(),
-}).openapi('GenerateStructuredMetadataRequest');
+}).openapi('StructuredMetadataRequest');
 
-export const GenerateStructuredMetadataResponseSchema = z.object({
+export const StructuredMetadataResponseSchema = z.object({
   result: z.object({
     description: z.string(),
     tags: z.array(z.string()),
@@ -112,36 +111,4 @@ export const GenerateStructuredMetadataResponseSchema = z.object({
     articleImagePrompt: z.string(),
   }),
   status: z.string(),
-}).openapi('GenerateStructuredMetadataResponse');
-
-// POST /gemini/generate-intro-music
-export const generateIntroMusicRoute = createRoute({
-  method: 'post',
-  path: '/generate-intro-music',
-  request: {
-    body: {
-      content: {
-        'application/json': {
-          schema: BaseAIRequestSchema, // Prompt for music generation (e.g., mood, genre, length)
-        },
-      },
-      description: 'Prompt for generating intro music',
-    },
-  },
-  responses: {
-    200: {
-      content: {
-        'application/json': { 
-          schema: GenerateMusicResponseSchema,
-        },
-      },
-      description: 'Intro music generated successfully',
-    },
-    400: { description: 'Bad Request', content: { 'application/json': { schema: ErrorSchema } } },
-    401: { description: 'Unauthorized', content: { 'application/json': { schema: ErrorSchema } } },
-    403: { description: 'Forbidden', content: { 'application/json': { schema: ErrorSchema } } },
-    500: { description: 'Internal Server Error', content: { 'application/json': { schema: ErrorSchema } } },
-  },
-  summary: 'Generate intro music',
-  tags: ['AI'],
-});
+}).openapi('StructuredMetadataResponse');

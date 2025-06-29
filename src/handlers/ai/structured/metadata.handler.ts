@@ -1,20 +1,20 @@
 import { z } from 'zod';
 import type { Context } from 'hono';
 import {
-  GenerateStructuredMetadataRequestSchema,
-  GenerateStructuredMetadataResponseSchema,
+  StructuredMetadataRequestSchema,
+  StructuredMetadataResponseSchema,
 } from '../../../schemas/ai.schemas.js';
-import { generateStructuredMetadataRoute } from '../../../routes/ai.routes.js';
+import { structuredMetadataRoute } from '../../../routes/ai.routes.js';
 import { GoogleGenAI, Type } from '@google/genai';
 
 export const generateStructuredMetadataHandler = async (
   c: Context<
     { Variables: {} },
-    typeof generateStructuredMetadataRoute.path,
-    { out: { json: z.infer<typeof GenerateStructuredMetadataRequestSchema> } }
+    typeof structuredMetadataRoute.path,
+    { out: { json: z.infer<typeof StructuredMetadataRequestSchema> } }
   >
 ) => {
-  const validatedBody = (c.req as any).valid('json') as z.infer<typeof GenerateStructuredMetadataRequestSchema>;
+  const validatedBody = (c.req as any).valid('json') as z.infer<typeof StructuredMetadataRequestSchema>;
 
   if (!validatedBody) {
     return c.json({ error: 'Invalid request body' }, 400);
@@ -81,7 +81,7 @@ export const generateStructuredMetadataHandler = async (
     return c.json({ error: 'Generated metadata is not valid JSON' }, 500);
   }
 
-  const response: z.infer<typeof GenerateStructuredMetadataResponseSchema> = {
+  const response: z.infer<typeof StructuredMetadataResponseSchema> = {
     result: parsedResult,
     status: 'success',
   };

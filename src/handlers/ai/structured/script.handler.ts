@@ -1,21 +1,21 @@
 import { z } from 'zod';
 import type { Context } from 'hono'; // Use base Hono Context
 import type { RouteConfigToTypedResponse } from '@hono/zod-openapi';
-import { GenerateStructuredScriptRequestSchema } from '../../../schemas/ai.schemas.js';
-import { generateStructuredScriptRoute } from '../../../routes/ai.routes.js';
+import { StructuredScriptRequestSchema } from '../../../schemas/ai.schemas.js';
+import { structuredScriptRoute } from '../../../routes/ai.routes.js';
 import { GoogleGenAI, Type } from '@google/genai';
 import { createTask, updateTask } from '../../../services/task.service.js';
 
 // Define the type for the input based on the Zod schema
-type InferredGenerateStructuredScriptRequest = z.infer<typeof GenerateStructuredScriptRequestSchema>;
+type InferredGenerateStructuredScriptRequest = z.infer<typeof StructuredScriptRequestSchema>;
 
 export const scriptHandler = async (
   c: Context<
     { Variables: {} }, // Environment type
-    typeof generateStructuredScriptRoute.path, // Path from route definition
+    typeof structuredScriptRoute.path, // Path from route definition
     { out: { json: InferredGenerateStructuredScriptRequest } } // Input type for validation
   >
-): Promise<RouteConfigToTypedResponse<typeof generateStructuredScriptRoute>> => {
+): Promise<RouteConfigToTypedResponse<typeof structuredScriptRoute>> => {
   const validatedBody = (c.req as any).valid('json') as InferredGenerateStructuredScriptRequest;
 
   if (!validatedBody) {

@@ -7,15 +7,15 @@ import {
   TaskCreationResponseSchema,
   // New Schemas
   BaseAIRequestSchema, // For most new routes
-  GenerateEpisodeAudioRequestSchema, // Specific for episode audio
-  GenerateStructuredScriptRequestSchema,
-  GenerateStructuredTitlesRequestSchema,
-  GenerateTitlesResponseSchema,
-  GenerateStructuredMetadataRequestSchema,
-  GenerateStructuredMetadataResponseSchema,
-  GenerateImageResponseSchema,
-  GenerateMusicResponseSchema,
-  GenerateVideoResponseSchema,
+  MultiSpeakerSpeechRequestSchema, // Specific for multi-speaker speech
+  StructuredScriptRequestSchema,
+  StructuredTitlesRequestSchema,
+  StructuredTitlesResponseSchema,
+  StructuredMetadataRequestSchema,
+  StructuredMetadataResponseSchema,
+  ImageResponseSchema,
+  MusicResponseSchema,
+  VideoResponseSchema,
 
 } from '../schemas/ai.schemas.js';
 import { textHandler } from '../handlers/ai/text.handler.js';
@@ -23,13 +23,13 @@ import { textHandler } from '../handlers/ai/text.handler.js';
 import { titlesHandler } from '../handlers/ai/structured/titles.handler.js';
 import { generateStructuredMetadataHandler } from '../handlers/ai/structured/metadata.handler.js';
 import { scriptHandler } from '../handlers/ai/structured/script.handler.js';
-import { generateEpisodeAudioHandler } from '../handlers/ai/multi-speaker-speech.js';
+import { generateMultiSpeakerSpeechHandler } from '../handlers/ai/multi-speaker-speech.js';
 import { imageHandler } from '../handlers/ai/image.handler.js';
 import { musicHandler } from '../handlers/ai/music.handler.js';
 import { videoHandler } from '../handlers/ai/video.handler.js';
 import { bearerAuth } from '../middlewares/auth.js';
 
-// /ai/text
+// POST /ai/text
 export const textRoute = createRoute({
   method: 'post',
   path: '/text',
@@ -99,15 +99,15 @@ export const textRoute = createRoute({
   tags: ['AI'],
 });
 
-// POST /gemini/generate-episode-audio
-export const generateEpisodeAudioRoute = createRoute({
+// POST /ai/multi-speaker-speech
+export const generateMultiSpeakerSpeechRoute = createRoute({
   method: 'post',
-  path: '/generate-episode-audio',
+  path: '/multi-speaker-speech',
   request: {
     body: {
       content: {
         'application/json': {
-          schema: GenerateEpisodeAudioRequestSchema, // Uses updated schema with optional model
+          schema: MultiSpeakerSpeechRequestSchema, // Uses updated schema with optional model
         },
       },
       description: 'Script and optional model for audio generation',
@@ -120,14 +120,14 @@ export const generateEpisodeAudioRoute = createRoute({
           schema: TaskCreationResponseSchema, // Response is now taskId and message
         },
       },
-      description: 'Audio generation task created and processing started. The actual audio (GenerateEpisodeAudioResponseSchema) will be available via the task status endpoint once completed.',
+      description: 'Multi-speaker speech generation task created and processing started. The actual audio (GenerateMultiSpeakerSpeechResponseSchema) will be available via the task status endpoint once completed.',
     },
     400: { description: 'Bad Request', content: { 'application/json': { schema: ErrorSchema } } },
     401: { description: 'Unauthorized', content: { 'application/json': { schema: ErrorSchema } } },
     403: { description: 'Forbidden', content: { 'application/json': { schema: ErrorSchema } } },
     500: { description: 'Internal Server Error', content: { 'application/json': { schema: ErrorSchema } } },
   },
-  summary: 'Initiate generation of episode audio from script (asynchronous)',
+  summary: 'Initiate generation of multi-speaker speech from script (asynchronous)',
   tags: ['AI'],
 });
 
@@ -149,7 +149,7 @@ export const imageRoute = createRoute({
     200: {
       content: {
         'application/json': { 
-          schema: GenerateImageResponseSchema,
+          schema: ImageResponseSchema,
         },
       },
       description: 'Thumbnail image generated successfully',
@@ -181,7 +181,7 @@ export const musicRoute = createRoute({
     200: {
       content: {
         'application/json': {
-          schema: GenerateMusicResponseSchema,
+          schema: MusicResponseSchema,
         },
       },
       description: 'Music generated successfully',
@@ -212,7 +212,7 @@ export const videoRoute = createRoute({
     200: {
       content: {
         'application/json': {
-          schema: GenerateVideoResponseSchema,
+          schema: VideoResponseSchema,
         },
       },
       description: 'Video generated successfully',
@@ -227,14 +227,14 @@ export const videoRoute = createRoute({
 });
 
 // POST /ai/structured/titles
-export const GenerateStructuredTitlesRoute = createRoute({
+export const structuredTitlesRoute = createRoute({
   method: 'post',
   path: '/structured/titles',
   request: {
     body: {
       content: {
         'application/json': {
-          schema: GenerateStructuredTitlesRequestSchema,
+          schema: StructuredTitlesRequestSchema,
         },
       },
       description: 'Prompt for generating structured titles',
@@ -244,7 +244,7 @@ export const GenerateStructuredTitlesRoute = createRoute({
     200: {
       content: {
         'application/json': {
-          schema: GenerateTitlesResponseSchema,
+          schema: StructuredTitlesResponseSchema,
         },
       },
       description: 'Structured titles generated successfully',
@@ -259,14 +259,14 @@ export const GenerateStructuredTitlesRoute = createRoute({
 });
 
 // POST /ai/structured/metadata
-export const generateStructuredMetadataRoute = createRoute({
+export const structuredMetadataRoute = createRoute({
   method: 'post',
   path: '/structured/metadata',
   request: {
     body: {
       content: {
         'application/json': {
-          schema: GenerateStructuredMetadataRequestSchema,
+          schema: StructuredMetadataRequestSchema,
         },
       },
       description: 'Prompt and article for generating structured metadata',
@@ -276,7 +276,7 @@ export const generateStructuredMetadataRoute = createRoute({
     200: {
       content: {
         'application/json': {
-          schema: GenerateStructuredMetadataResponseSchema,
+          schema: StructuredMetadataResponseSchema,
         },
       },
       description: 'Structured metadata generated successfully',
@@ -291,14 +291,14 @@ export const generateStructuredMetadataRoute = createRoute({
 });
 
 // POST /ai/structured/script
-export const generateStructuredScriptRoute = createRoute({
+export const structuredScriptRoute = createRoute({
   method: 'post',
   path: '/structured/script',
   request: {
     body: {
       content: {
         'application/json': {
-          schema: GenerateStructuredScriptRequestSchema,
+          schema: StructuredScriptRequestSchema,
         },
       },
       description: 'Prompt for generating a episode script',
@@ -328,11 +328,11 @@ export const aiRoutes = new OpenAPIHono<{ Variables: {} }>();
 
 // Helper array for applying middlewares
 const newRouteConfigs = [
-  { route: GenerateStructuredTitlesRoute, handler: titlesHandler, requestSchema: GenerateStructuredTitlesRequestSchema },
+  { route: structuredTitlesRoute, handler: titlesHandler, requestSchema: StructuredTitlesRequestSchema },
   { route: textRoute, handler: textHandler, requestSchema: TextRequestSchema },
-  { route: generateStructuredMetadataRoute, handler: generateStructuredMetadataHandler, requestSchema: GenerateStructuredMetadataRequestSchema },
-  { route: generateStructuredScriptRoute, handler: scriptHandler, requestSchema: GenerateStructuredScriptRequestSchema },
-  { route: generateEpisodeAudioRoute, handler: generateEpisodeAudioHandler, requestSchema: GenerateEpisodeAudioRequestSchema },
+  { route: structuredMetadataRoute, handler: generateStructuredMetadataHandler, requestSchema: StructuredMetadataRequestSchema },
+  { route: structuredScriptRoute, handler: scriptHandler, requestSchema: StructuredScriptRequestSchema },
+  { route: generateMultiSpeakerSpeechRoute, handler: generateMultiSpeakerSpeechHandler, requestSchema: MultiSpeakerSpeechRequestSchema },
   { route: imageRoute, handler: imageHandler, requestSchema: BaseAIRequestSchema },
   { route: musicRoute, handler: musicHandler, requestSchema: BaseAIRequestSchema },
   { route: videoRoute, handler: videoHandler, requestSchema: BaseAIRequestSchema },
@@ -347,11 +347,11 @@ newRouteConfigs.forEach(({ route, requestSchema }) => {
 // Define OpenAPI routes individually for type safety
 aiRoutes.openapi(textRoute, textHandler);
 aiRoutes.openapi(imageRoute, imageHandler);
-aiRoutes.openapi(generateEpisodeAudioRoute, generateEpisodeAudioHandler);
-aiRoutes.openapi(musicRoute, musicHandler);
 aiRoutes.openapi(videoRoute, videoHandler);
-aiRoutes.openapi(GenerateStructuredTitlesRoute, titlesHandler);
-aiRoutes.openapi(generateStructuredMetadataRoute, generateStructuredMetadataHandler);
-aiRoutes.openapi(generateStructuredScriptRoute, scriptHandler);
+aiRoutes.openapi(generateMultiSpeakerSpeechRoute, generateMultiSpeakerSpeechHandler);
+aiRoutes.openapi(musicRoute, musicHandler);
+aiRoutes.openapi(structuredTitlesRoute, titlesHandler);
+aiRoutes.openapi(structuredMetadataRoute, generateStructuredMetadataHandler);
+aiRoutes.openapi(structuredScriptRoute, scriptHandler);
 
 export default aiRoutes;

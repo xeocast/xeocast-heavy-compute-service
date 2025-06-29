@@ -1,11 +1,11 @@
 import { z } from 'zod';
 import {
   TextResponseSchema,
-  GenerateTitlesResponseSchema,
-  GenerateStructuredScriptResponseSchema,
-  GenerateEpisodeAudioResponseSchema,
-  GenerateImageResponseSchema,
-  GenerateMusicResponseSchema,
+  StructuredTitlesResponseSchema,
+  StructuredScriptResponseSchema,
+  MultiSpeakerSpeechResponseSchema,
+  ImageResponseSchema,
+  MusicResponseSchema,
   BaseAIResponseSchema,
 } from './ai.schemas.js';
 
@@ -65,7 +65,7 @@ export const CompletedGenerateTitlesTaskSchema = z
     createdAt: z.string().datetime(),
     updatedAt: z.string().datetime(),
     input: z.any().optional(),
-    result: GenerateTitlesResponseSchema,
+    result: StructuredTitlesResponseSchema,
   })
   .openapi('CompletedGenerateTitlesTask');
 
@@ -77,7 +77,7 @@ export const CompletedGenerateScriptTaskSchema = z
     createdAt: z.string().datetime(),
     updatedAt: z.string().datetime(),
     input: z.any().optional(),
-    result: GenerateStructuredScriptResponseSchema,
+    result: StructuredScriptResponseSchema,
   })
   .openapi('CompletedGenerateScriptTask');
 
@@ -89,7 +89,7 @@ export const CompletedGenerateAudioTaskSchema = z
     createdAt: z.string().datetime(),
     updatedAt: z.string().datetime(),
     input: z.any().optional(),
-    result: GenerateEpisodeAudioResponseSchema,
+    result: MultiSpeakerSpeechResponseSchema,
   })
   .openapi('CompletedGenerateAudioTask');
 
@@ -101,7 +101,7 @@ export const CompletedGenerateImageTaskSchema = z
     createdAt: z.string().datetime(),
     updatedAt: z.string().datetime(),
     input: z.any().optional(),
-    result: GenerateImageResponseSchema,
+    result: ImageResponseSchema,
   })
   .openapi('CompletedGenerateImageTask');
 
@@ -113,7 +113,7 @@ export const CompletedGenerateMusicTaskSchema = z
     createdAt: z.string().datetime(),
     updatedAt: z.string().datetime(),
     input: z.any().optional(),
-    result: GenerateMusicResponseSchema,
+    result: MusicResponseSchema,
   })
   .openapi('CompletedGenerateMusicTask');
 
