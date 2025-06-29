@@ -23,7 +23,7 @@ import { generateTextHandler } from '../handlers/ai/text.handler.js';
 import { generateImageHandler } from '../handlers/ai/image.handler.js';
 import { generateVideoHandler } from '../handlers/ai/video.handler.js';
 import { generateSingleSpeakerSpeechHandler } from '../handlers/ai/single-speaker-speech.handler.js';
-import { generateMultiSpeakerSpeechHandler } from '../handlers/ai/multi-speaker-speech.js';
+import { generateMultiSpeakerSpeechHandler } from '../handlers/ai/multi-speaker-speech.handler.js';
 import { generateMusicHandler } from '../handlers/ai/music.handler.js';
 import { generateStructuredTitlesHandler } from '../handlers/ai/structured/titles.handler.js';
 import { generateStructuredMetadataHandler } from '../handlers/ai/structured/metadata.handler.js';

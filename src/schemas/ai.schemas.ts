@@ -68,7 +68,10 @@ export const StructuredScriptRequestSchema = z.object({
   prompt: z.string().min(1, { message: 'Prompt cannot be empty' }),
   article: z.string().min(1, { message: 'Article content cannot be empty' }),
   model: z.string().optional(),
+  provider: z.enum(['google', 'xai', 'openai', 'anthropic']).optional().default('google'),
 }).openapi('StructuredScriptRequest');
+
+export type InferredStructuredScriptRequest = z.infer<typeof StructuredScriptRequestSchema>;
 
 export const StructuredScriptResponseSchema = z.object({
   result: z.array(
@@ -94,7 +97,7 @@ export const StructuredTitlesResponseSchema = z.object({
 // POST /ai/structured/titles
 export const StructuredTitlesRequestSchema = z.object({
   prompt: z.string().openapi({ example: 'How to learn to code' }),
-  model: z.string().openapi({ example: 'gemini-1.5-pro-latest' }),
+  model: z.string().openapi({ example: 'gemini-2.5-flash' }),
 }).openapi('StructuredTitlesRequest');
 
 // --- Specific Schemas for StructuredMetadata ---
