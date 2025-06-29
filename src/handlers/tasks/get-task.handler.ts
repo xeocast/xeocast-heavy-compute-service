@@ -3,9 +3,9 @@ import { Context } from 'hono';
 import type { RouteConfigToTypedResponse } from '@hono/zod-openapi';
 import { getTaskById } from '../../services/task.service.js';
 import {
-  getTaskRoute,
   GetTaskPathParamsSchema,
 } from '../../schemas/task.schemas.js';
+import { getTaskRoute } from '../../routes/task.routes.js';
 
 export const getTaskHandler = async (
   c: Context<

@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { createRoute } from '@hono/zod-openapi';
 
 export const TextRequestSchema = z.object({
   prompt: z.string().min(1, { message: 'Prompt cannot be empty' }),
@@ -20,8 +21,6 @@ export const TaskCreationResponseSchema = z.object({
   taskId: z.string().uuid(),
   message: z.string(),
 }).openapi('TaskCreationResponse');
-
-
 
 // --- Base Schemas for new AI Endpoints ---
 export const BaseAIRequestSchema = z.object({
@@ -93,8 +92,6 @@ export const GenerateStructuredTitlesRequestSchema = z.object({
   model: z.string().openapi({ example: 'gemini-1.5-pro-latest' }),
 }).openapi('GenerateStructuredTitlesRequest');
 
-
-
 // --- Specific Schemas for GenerateArticleMetadata ---
 export const GenerateArticleMetadataRequestSchema = z.object({
   prompt: z.string().min(1, { message: 'Prompt cannot be empty' }),
@@ -111,20 +108,6 @@ export const GenerateArticleMetadataResponseSchema = z.object({
   }),
   status: z.string(),
 }).openapi('GenerateArticleMetadataResponse');
-
-
-
-
-
-
-
-
-
-
-
-
-
-import { createRoute } from '@hono/zod-openapi';
 
 // POST /gemini/generate-intro-music
 export const generateIntroMusicRoute = createRoute({
@@ -157,6 +140,3 @@ export const generateIntroMusicRoute = createRoute({
   summary: 'Generate intro music',
   tags: ['AI'],
 });
-
-
-

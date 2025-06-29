@@ -2,13 +2,13 @@ import { z } from 'zod';
 import type { Context } from 'hono'; // Use base Hono Context due to @hono/zod-openapi type resolution issues
 import type { RouteConfigToTypedResponse } from '@hono/zod-openapi';
 import {
-  textRoute, // Import the route definition
   TextRequestSchema, // Keep for z.infer on response or if needed elsewhere
   type InferredTextRequest, // Import the new type alias
   // TextResponseSchema, // No longer directly returned by handler's immediate response, but its structure is used for task result
 } from '../../schemas/ai.schemas.js';
 import { GoogleGenAI } from '@google/genai'; // Reverted to GoogleGenAI
 import { createTask, updateTask } from '../../services/task.service.js';
+import { textRoute } from '../../routes/ai.routes.js';
 
 // This is a skeleton handler. Implement the actual Gemini API call here.
 export const textHandler = async (

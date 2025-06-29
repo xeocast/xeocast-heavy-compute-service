@@ -1,10 +1,10 @@
 import { z } from 'zod';
 import type { Context } from 'hono';
 import {
-  generateArticleMetadataRoute,
   GenerateArticleMetadataRequestSchema,
   GenerateArticleMetadataResponseSchema,
 } from '../../../schemas/ai.schemas.js';
+import { generateArticleMetadataRoute } from '../../../routes/ai.routes.js';
 import { GoogleGenAI, Type } from '@google/genai';
 
 export const generateArticleMetadataHandler = async (

@@ -1,10 +1,10 @@
 import { z } from 'zod';
 import type { Context } from 'hono';
 import {
-  generateArticleImageRoute,
   BaseAIRequestSchema,
   GenerateImageResponseSchema,
 } from '../../schemas/ai.schemas.js';
+import { generateArticleImageRoute } from '../../routes/ai.routes.js';
 
 export const generateArticleImageHandler = async (
   c: Context<

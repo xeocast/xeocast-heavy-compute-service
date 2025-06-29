@@ -15,7 +15,7 @@ import {
   GenerateArticleMetadataResponseSchema,
   GenerateImageResponseSchema,
   GenerateMusicResponseSchema,
-  BaseAIResponseSchema,
+
 } from '../schemas/ai.schemas.js';
 import { textHandler } from '../handlers/ai/text.handler.js';
 // New Handlers
@@ -180,7 +180,7 @@ export const generateSeriesTitlesRoute = createRoute({
     200: {
       content: {
         'application/json': {
-          schema: BaseAIResponseSchema,
+          schema: GenerateTitlesResponseSchema,
         },
       },
       description: 'Series titles generated successfully',

@@ -2,7 +2,6 @@ import { z } from 'zod';
 import type { Context } from 'hono';
 import type { RouteConfigToTypedResponse } from '@hono/zod-openapi';
 import {
-  generateEpisodeAudioRoute,
   GenerateEpisodeAudioRequestSchema,
   type InferredGenerateEpisodeAudioRequest,
   // GenerateEpisodeAudioResponseSchema is used for the task's result structure
@@ -12,6 +11,7 @@ import { createTask, updateTask } from '../../services/task.service.js';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import { Writer } from 'wav';
 import { type Part, type GenerationConfig, Modality } from '@google/genai'; // Added Modality
+import { generateEpisodeAudioRoute } from '../../routes/ai.routes.js';
 
 // R2 Client (initialized later if credentials are valid)
 let r2Client: S3Client | undefined;

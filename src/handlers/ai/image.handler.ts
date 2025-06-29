@@ -1,11 +1,11 @@
 import { z } from 'zod';
 import type { Context } from 'hono';
 import {
-  generateThumbnailImageRoute,
   BaseAIRequestSchema,
   GenerateImageResponseSchema,
 } from '../../schemas/ai.schemas.js';
 import { GoogleGenAI } from '@google/genai';
+import { generateThumbnailImageRoute } from '../../routes/ai.routes.js';
 
 export const generateThumbnailImageHandler = async (
   c: Context<

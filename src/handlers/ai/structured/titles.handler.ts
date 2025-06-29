@@ -2,10 +2,10 @@ import { z } from 'zod';
 import type { Context } from 'hono';
 import { RouteConfigToTypedResponse } from '@hono/zod-openapi';
 import {
-  GenerateStructuredTitlesRoute,
   GenerateStructuredTitlesRequestSchema,
   GenerateTitlesResponseSchema,
 } from '../../../schemas/ai.schemas.js';
+import { GenerateStructuredTitlesRoute } from '../../../routes/ai.routes.js';
 import { GoogleGenAI, Type } from '@google/genai';
 
 export const titlesHandler = async (

@@ -1,11 +1,8 @@
 import { z } from 'zod';
 import type { Context } from 'hono'; // Use base Hono Context
 import type { RouteConfigToTypedResponse } from '@hono/zod-openapi';
-import {
-  generateEpisodeScriptRoute, // Import the route definition
-  GenerateEpisodeScriptRequestSchema, // Keep for z.infer on response or if needed elsewhere
-  // GenerateEpisodeScriptResponseSchema, // No longer directly returned by handler's immediate response
-} from '../../../schemas/ai.schemas.js';
+import { GenerateEpisodeScriptRequestSchema } from '../../../schemas/ai.schemas.js';
+import { generateEpisodeScriptRoute } from '../../../routes/ai.routes.js';
 import { GoogleGenAI, Type } from '@google/genai';
 import { createTask, updateTask } from '../../../services/task.service.js';
 

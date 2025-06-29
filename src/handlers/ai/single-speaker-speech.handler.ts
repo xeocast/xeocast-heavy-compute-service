@@ -1,10 +1,10 @@
 import { z } from 'zod';
 import type { Context } from 'hono';
 import {
-  generateBackgroundMusicRoute,
   BaseAIRequestSchema,
   GenerateMusicResponseSchema,
 } from '../../schemas/ai.schemas.js';
+import { generateBackgroundMusicRoute } from '../../routes/ai.routes.js';
 
 export const generateBackgroundMusicHandler = async (
   c: Context<
