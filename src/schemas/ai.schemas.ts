@@ -3,6 +3,7 @@ import { z } from 'zod';
 export const TextRequestSchema = z.object({
   prompt: z.string().min(1, { message: 'Prompt cannot be empty' }),
   model: z.string().optional(),
+  provider: z.enum(['google', 'xai', 'openai', 'anthropic']).optional().default('google'),
 }).openapi('TextRequest');
 
 export type InferredTextRequest = z.infer<typeof TextRequestSchema>;
