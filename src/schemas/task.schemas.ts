@@ -1,5 +1,4 @@
 import { z } from 'zod';
-import { createRoute } from '@hono/zod-openapi';
 import {
   TextResponseSchema,
   GenerateTitlesResponseSchema,
@@ -182,51 +181,4 @@ export const ListTasksResponseSchema = z.array(TaskSchema); // Listing can remai
 export type ListTasksResponse = z.infer<typeof ListTasksResponseSchema>;
 
 
-// --- Route Definitions ---
 
-export const listTasksRoute = createRoute({
-  method: 'get',
-  tags: ['Tasks'],
-  path: '/',
-  responses: {
-    200: {
-      content: {
-        'application/json': {
-          schema: ListTasksResponseSchema,
-        },
-      },
-      description: 'Retrieve a list of all tasks.',
-    },
-  },
-});
-
-export const getTaskRoute = createRoute({
-  method: 'get',
-  tags: ['Tasks'],
-  path: '/{taskId}',
-  // This is the crucial ID that the `links` object will reference
-  operationId: 'getTaskStatus',
-  request: {
-    params: GetTaskPathParamsSchema,
-  },
-  responses: {
-    200: {
-      content: {
-        'application/json': {
-          schema: GetTaskResponseSchema, // Use the union schema
-        },
-      },
-      description: 'Retrieve the status and details of a task. The result will vary based on the task status and type.',
-    },
-    404: {
-      content: {
-        'application/json': {
-          schema: z.object({
-            error: z.string(),
-          }),
-        },
-      },
-      description: 'Task not found.',
-    },
-  },
-});
