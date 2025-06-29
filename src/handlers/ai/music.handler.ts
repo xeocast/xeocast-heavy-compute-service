@@ -2,14 +2,14 @@ import { z } from 'zod';
 import type { Context } from 'hono';
 import {
   BaseAIRequestSchema,
-  GenerateImageResponseSchema,
+  GenerateMusicResponseSchema,
 } from '../../schemas/ai.schemas.js';
-import { generateArticleImageRoute } from '../../routes/ai.routes.js';
+import { musicRoute } from '../../routes/ai.routes.js';
 
-export const generateArticleImageHandler = async (
+export const musicHandler = async (
   c: Context<
     { Variables: {} },
-    typeof generateArticleImageRoute.path,
+    typeof musicRoute.path,
     { out: { json: z.infer<typeof BaseAIRequestSchema> } }
   >
 ) => {
@@ -21,8 +21,8 @@ export const generateArticleImageHandler = async (
 
   // const { prompt } = validatedBody;
 
-  const response: z.infer<typeof GenerateImageResponseSchema> = {
-    imageUrl: `https://example.com/placeholder-article-image-for-prompt.png`,
+  const response: z.infer<typeof GenerateMusicResponseSchema> = {
+    audioUrl: `https://example.com/placeholder-background-music-for-prompt.mp3`,
     status: 'success',
   };
   return c.json(response, 200);

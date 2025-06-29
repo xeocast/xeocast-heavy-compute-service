@@ -58,6 +58,11 @@ export const GenerateMusicResponseSchema = z.object({
   status: z.string(),
 }).openapi('GenerateMusicResponse');
 
+export const GenerateVideoResponseSchema = z.object({
+  videoUrl: z.string().url({ message: 'Invalid URL format for videoUrl' }), 
+  status: z.string(),
+}).openapi('GenerateVideoResponse');
+
 // --- Specific Schemas for GenerateEpisodeScript ---
 export const GenerateStructuredScriptRequestSchema = z.object({
   prompt: z.string().min(1, { message: 'Prompt cannot be empty' }),

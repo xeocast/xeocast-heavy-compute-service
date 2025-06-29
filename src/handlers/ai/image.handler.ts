@@ -5,12 +5,12 @@ import {
   GenerateImageResponseSchema,
 } from '../../schemas/ai.schemas.js';
 import { GoogleGenAI } from '@google/genai';
-import { generateThumbnailImageRoute } from '../../routes/ai.routes.js';
+import { imageRoute } from '../../routes/ai.routes.js';
 
-export const generateThumbnailImageHandler = async (
+export const imageHandler = async (
   c: Context<
     { Variables: {} },
-    typeof generateThumbnailImageRoute.path,
+    typeof imageRoute.path,
     { out: { json: z.infer<typeof BaseAIRequestSchema> } }
   >
 ) => {
