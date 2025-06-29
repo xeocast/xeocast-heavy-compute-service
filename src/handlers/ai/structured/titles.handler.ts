@@ -1,76 +1,82 @@
 import { z } from 'zod';
 import type { Context } from 'hono';
-import { RouteConfigToTypedResponse } from '@hono/zod-openapi';
+import type { RouteConfigToTypedResponse } from '@hono/zod-openapi';
 import {
   StructuredTitlesRequestSchema,
-  StructuredTitlesResponseSchema,
 } from '../../../schemas/ai.schemas.js';
 import { structuredTitlesRoute } from '../../../routes/ai.routes.js';
-import { GoogleGenAI, Type } from '@google/genai';
+import { createTask, updateTask } from '../../../services/task.service.js';
+import { generateStructuredTitlesWithGemini } from '../../../services/ai/google.service.js';
+
+// Extend the request schema to include a provider
+type InferredStructuredTitlesRequest = z.infer<typeof StructuredTitlesRequestSchema> & {
+  provider: 'google' | 'anthropic' | 'openai' | 'xai'; // Add other providers as they are implemented
+};
 
 export const generateStructuredTitlesHandler = async (
   c: Context<
     { Variables: {} },
     typeof structuredTitlesRoute.path,
-    { out: { json: z.infer<typeof StructuredTitlesRequestSchema> } }
+    { out: { json: InferredStructuredTitlesRequest } }
   >
 ): Promise<RouteConfigToTypedResponse<typeof structuredTitlesRoute>> => {
-  const { prompt, model } = c.req.valid('json');
+  const validatedBody = (c.req as any).valid('json') as InferredStructuredTitlesRequest;
 
-  // Check if GEMINI_API_KEY is set.
-  if (!process.env.GEMINI_API_KEY) {
-    return c.json({ error: 'GEMINI_API_KEY is not configured' }, 500);
+  if (!validatedBody) {
+    return c.json({ error: 'Invalid request body' }, 400) as any;
   }
 
-  const genAI = new GoogleGenAI({
-    apiKey: process.env.GEMINI_API_KEY,
-  });
+  const { prompt, model: requestedModel, provider } = validatedBody;
 
-  const aiModel = model || "gemini-2.5-flash-preview-05-20";
+  const taskId = createTask({ prompt, model: requestedModel, provider });
 
-  const aiResponse = await genAI.models.generateContent({
-    model: aiModel,
-    contents: [
-      { role: "user", parts: [{ text: prompt }] }
-    ],
-    config: {
-      responseMimeType: "application/json",
-      responseSchema: {
-        type: Type.ARRAY,
-        items: {
-          type: Type.OBJECT,
-          properties: {
-            title: {
-              type: Type.STRING,
-            },
-            description: {
-              type: Type.STRING,
-            },
-          },
-          required: ['title', 'description'],
-          propertyOrdering: ['title', 'description'],
+  c.res = c.json({ taskId: taskId, message: "Structured titles generation task created and processing started." }, 202);
+
+  const processAndCompleteTask = async () => {
+    try {
+      updateTask(taskId, 'PROCESSING');
+
+      switch (provider) {
+        case 'google':
+          await generateStructuredTitlesWithGemini(taskId, prompt, requestedModel);
+          break;
+        // Add cases for other providers here when their service functions are implemented
+        default:
+          updateTask(taskId, 'FAILED', { error: { message: `Unsupported AI provider: ${provider}` } });
+          break;
+      }
+    } catch (error: any) {
+      console.error(`Task ${taskId}: Unhandled error in background task execution:`, error);
+      updateTask(taskId, 'FAILED', {
+        error: {
+          message: 'Unhandled exception in background processing.',
+          details: error.stack || error.toString(),
         },
-      },
-    },
-  });
-
-  const metaJsonString = aiResponse.text;
-
-  if (!metaJsonString) {
-    return c.json({ error: 'Failed to generate content' }, 500);
-  }
-
-  let parsedResult;
-  try {
-    parsedResult = JSON.parse(metaJsonString);
-  } catch (e) {
-    console.error('Generated metadata is not valid JSON:', metaJsonString, e);
-    return c.json({ error: 'Generated metadata is not valid JSON' }, 500);
-  }
-
-  const response: z.infer<typeof StructuredTitlesResponseSchema> = {
-    result: parsedResult,
-    status: 'success',
+      });
+    }
   };
-  return c.json(response, 200);
+
+  let ranWithWaitUntil = false;
+  try {
+    if (c.executionCtx && typeof c.executionCtx.waitUntil === 'function') {
+      c.executionCtx.waitUntil(processAndCompleteTask());
+      ranWithWaitUntil = true;
+    }
+  } catch {
+    // Fallback if waitUntil is not available
+  }
+
+  if (!ranWithWaitUntil) {
+    processAndCompleteTask().catch(err => {
+      console.error(`Task ${taskId}: Unhandled error in background task execution:`, err);
+      updateTask(taskId, 'FAILED', {
+        error: {
+          message: 'Unhandled exception in background processing.',
+          details: err.stack || err.toString(),
+        },
+      });
+    });
+  }
+
+  return c.res as any;
 };

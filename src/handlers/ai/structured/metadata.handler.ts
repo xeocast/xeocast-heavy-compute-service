@@ -1,89 +1,88 @@
-import { z } from 'zod';
 import type { Context } from 'hono';
+import type { RouteConfigToTypedResponse } from '@hono/zod-openapi';
 import {
-  StructuredMetadataRequestSchema,
-  StructuredMetadataResponseSchema,
+  InferredStructuredMetadataRequest,
 } from '../../../schemas/ai.schemas.js';
 import { structuredMetadataRoute } from '../../../routes/ai.routes.js';
-import { GoogleGenAI, Type } from '@google/genai';
+import { createTask, updateTask } from '../../../services/task.service.js';
+import { generateStructuredMetadataWithGemini } from '../../../services/ai/google.service.js';
+import { generateStructuredMetadataWithClaude } from '../../../services/ai/anthropic.service.js';
+import { generateStructuredMetadataWithGPT } from '../../../services/ai/openai.service.js';
+import { generateStructuredMetadataWithGrok } from '../../../services/ai/xai.service.js';
 
 export const generateStructuredMetadataHandler = async (
   c: Context<
     { Variables: {} },
     typeof structuredMetadataRoute.path,
-    { out: { json: z.infer<typeof StructuredMetadataRequestSchema> } }
+    { out: { json: InferredStructuredMetadataRequest } }
   >
-) => {
-  const validatedBody = (c.req as any).valid('json') as z.infer<typeof StructuredMetadataRequestSchema>;
+): Promise<RouteConfigToTypedResponse<typeof structuredMetadataRoute>> => {
+  const validatedBody = (c.req as any).valid('json') as InferredStructuredMetadataRequest;
 
   if (!validatedBody) {
-    return c.json({ error: 'Invalid request body' }, 400);
+    return c.json({ error: 'Invalid request body' }, 400) as any;
   }
 
-  const { prompt, article, model } = validatedBody;
+  const { prompt, article, model: requestedModel, provider } = validatedBody;
 
-  // Check if GEMINI_API_KEY is set.
-  if (!process.env.GEMINI_API_KEY) {
-    return c.json({ error: 'GEMINI_API_KEY is not configured' }, 500);
-  }
+  const taskId = createTask({ prompt, article, model: requestedModel, provider });
 
-  const genAI = new GoogleGenAI({
-    apiKey: process.env.GEMINI_API_KEY,
-  });
+  c.executionCtx.waitUntil(processAndCompleteTask());
 
-  const fullPrompt = (str: string) =>
-    str.replace(/\{ ?articleContent ?\}/g, article);
+  return c.json({ taskId: taskId, message: "Metadata generation task created and processing started." }, 202);
 
-  const aiModel = model || "gemini-2.5-flash-preview-05-20";
+  async function processAndCompleteTask() {
+    try {
+      updateTask(taskId, 'PROCESSING');
 
-  const aiResponse = await genAI.models.generateContent({
-    model: aiModel,
-    contents: [
-      { role: "user", parts: [{ text: fullPrompt(prompt) }] }
-    ],
-    config: {
-      responseMimeType: "application/json",
-      responseSchema: {
-        type: Type.OBJECT,
-        properties: {
-          description: {
-            type: Type.STRING,
-          },
-          tags: {
-            type: Type.ARRAY,
-            items: {
-              type: Type.STRING,
-            },
-          },
-          thumbnailPrompt: {
-            type: Type.STRING,
-          },
-          articleImagePrompt: {
-            type: Type.STRING,
-          },
+      switch (provider) {
+        case 'google':
+          await generateStructuredMetadataWithGemini(taskId, prompt, article, requestedModel);
+          break;
+        case 'anthropic':
+          await generateStructuredMetadataWithClaude(taskId, prompt, article, requestedModel);
+          break;
+        case 'openai':
+          await generateStructuredMetadataWithGPT(taskId, prompt, article, requestedModel);
+          break;
+        case 'xai':
+          await generateStructuredMetadataWithGrok(taskId, prompt, article, requestedModel);
+          break;
+        default:
+          updateTask(taskId, 'FAILED', { error: { message: `Unsupported AI provider: ${provider}` } });
+          break;
+      }
+    } catch (error: any) {
+      console.error(`Task ${taskId}: Unhandled error in background task execution:`, error);
+      updateTask(taskId, 'FAILED', {
+        error: {
+          message: 'Unhandled exception in background processing.',
+          details: error.stack || error.toString(),
         },
-        propertyOrdering: ["description", "tags", "thumbnailPrompt", "articleImagePrompt"],
-      },
-    },
-  });
-
-  const metaJsonString = aiResponse.text;
-
-  if (!metaJsonString) {
-    return c.json({ error: 'Failed to generate content' }, 500);
-  }
-
-  let parsedResult;
-  try {
-    parsedResult = JSON.parse(metaJsonString);
-  } catch (e) {
-    console.error('Generated metadata is not valid JSON:', metaJsonString, e);
-    return c.json({ error: 'Generated metadata is not valid JSON' }, 500);
-  }
-
-  const response: z.infer<typeof StructuredMetadataResponseSchema> = {
-    result: parsedResult,
-    status: 'success',
+      });
+    }
   };
-  return c.json(response, 200);
+
+  let ranWithWaitUntil = false;
+  try {
+    if (c.executionCtx && typeof c.executionCtx.waitUntil === 'function') {
+      c.executionCtx.waitUntil(processAndCompleteTask());
+      ranWithWaitUntil = true;
+    }
+  } catch {
+  }
+
+  if (!ranWithWaitUntil) {
+    processAndCompleteTask().catch(err => {
+      console.error(`Task ${taskId}: Unhandled error in background task execution:`, err);
+      updateTask(taskId, 'FAILED', {
+        error: {
+          message: 'Unhandled exception in background processing.',
+          details: err.stack || err.toString(),
+        },
+      });
+    });
+  }
+  
+  return c.res as any;
 };

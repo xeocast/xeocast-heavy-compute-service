@@ -13,9 +13,7 @@ import {
   SingleSpeakerSpeechResponseSchema,
   MusicResponseSchema,
   StructuredTitlesRequestSchema,
-  StructuredTitlesResponseSchema,
   StructuredMetadataRequestSchema,
-  StructuredMetadataResponseSchema,
   StructuredScriptRequestSchema,
 
 } from '../schemas/ai.schemas.js';
@@ -275,13 +273,23 @@ export const structuredTitlesRoute = createRoute({
     },
   },
   responses: {
-    200: {
+    202: {
       content: {
         'application/json': {
-          schema: StructuredTitlesResponseSchema,
+          schema: TaskCreationResponseSchema,
         },
       },
-      description: 'Structured titles generated successfully',
+      description: 'Structured titles generation task created and processing started. The final result will conform to the `StructuredTitlesResponse` schema.',
+      links: {
+        getTaskStatus: {
+          operationId: 'getTaskStatus',
+          parameters: {
+            taskId: '$response.body#/taskId',
+          },
+          description:
+            'A link to poll the status of the created task. The `taskId` from this response body is used as the `taskId` path parameter in the /tasks/{taskId} endpoint.',
+        },
+      },
     },
     400: { description: 'Bad Request', content: { 'application/json': { schema: ErrorSchema } } },
     401: { description: 'Unauthorized', content: { 'application/json': { schema: ErrorSchema } } },
@@ -307,13 +315,23 @@ export const structuredMetadataRoute = createRoute({
     },
   },
   responses: {
-    200: {
+    202: {
       content: {
         'application/json': {
-          schema: StructuredMetadataResponseSchema,
+          schema: TaskCreationResponseSchema,
         },
       },
-      description: 'Structured metadata generated successfully',
+      description: 'Metadata generation task created and processing started. The final result will conform to the `StructuredMetadataResponse` schema.',
+      links: {
+        getTaskStatus: {
+          operationId: 'getTaskStatus',
+          parameters: {
+            taskId: '$response.body#/taskId',
+          },
+          description:
+            'A link to poll the status of the created task. The `taskId` from this response body is used as the `taskId` path parameter in the /tasks/{taskId} endpoint.',
+        },
+      },
     },
     400: { description: 'Bad Request', content: { 'application/json': { schema: ErrorSchema } } },
     401: { description: 'Unauthorized', content: { 'application/json': { schema: ErrorSchema } } },

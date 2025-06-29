@@ -7,3 +7,11 @@ export async function generateTextWithClaude(taskId: string, _prompt: string, _r
 export async function generateStructuredScriptWithClaude(taskId: string, _prompt: string, _article: string, _requestedModel?: string) {
     updateTask(taskId, 'FAILED', { error: { message: 'Structured script generation not yet implemented for Claude' } });
 }
+
+export async function generateStructuredMetadataWithClaude(taskId: string, _prompt: string, _article: string, _requestedModel?: string) {
+    updateTask(taskId, 'FAILED', { error: { message: 'Structured metadata generation not yet implemented for Claude' } });
+}
+
+export async function generateStructuredTitlesWithClaude(taskId: string, _prompt: string, _requestedModel?: string) {
+    updateTask(taskId, 'FAILED', { error: { message: 'Structured titles generation not yet implemented for Claude' } });
+}

@@ -98,6 +98,7 @@ export const StructuredTitlesResponseSchema = z.object({
 export const StructuredTitlesRequestSchema = z.object({
   prompt: z.string().openapi({ example: 'How to learn to code' }),
   model: z.string().openapi({ example: 'gemini-2.5-flash' }),
+  provider: z.enum(['google', 'xai', 'openai', 'anthropic']).optional().default('google'),
 }).openapi('StructuredTitlesRequest');
 
 // --- Specific Schemas for StructuredMetadata ---
@@ -105,7 +106,10 @@ export const StructuredMetadataRequestSchema = z.object({
   prompt: z.string().min(1, { message: 'Prompt cannot be empty' }),
   article: z.string().min(1, { message: 'Article content cannot be empty' }),
   model: z.string().optional(),
+  provider: z.enum(['google', 'xai', 'openai', 'anthropic']).optional().default('google'),
 }).openapi('StructuredMetadataRequest');
+
+export type InferredStructuredMetadataRequest = z.infer<typeof StructuredMetadataRequestSchema>;
 
 export const StructuredMetadataResponseSchema = z.object({
   result: z.object({
