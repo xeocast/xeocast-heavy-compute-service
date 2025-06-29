@@ -6,10 +6,7 @@ import {
   type InferredTextRequest,
 } from '../../schemas/ai.schemas.js';
 import { createTask, updateTask } from '../../services/task.service.js';
-import { generateTextWithGemini } from '../../services/ai/google.service.js';
-import { generateTextWithGPT } from '../../services/ai/openai.service.js';
-import { generateTextWithGrok } from '../../services/ai/xai.service.js';
-import { generateTextWithClaude } from '../../services/ai/anthropic.service.js';
+import { generateTextWithGemini } from '../../services/ai/google/text.service.js';
 import { textRoute } from '../../routes/ai.routes.js';
 
 export const generateTextHandler = async (
@@ -39,15 +36,7 @@ export const generateTextHandler = async (
         case 'google':
           await generateTextWithGemini(taskId, prompt, requestedModel);
           break;
-        case 'openai':
-          await generateTextWithGPT(taskId, prompt, requestedModel);
-          break;
-        case 'xai':
-          await generateTextWithGrok(taskId, prompt, requestedModel);
-          break;
-        case 'anthropic':
-          await generateTextWithClaude(taskId, prompt, requestedModel);
-          break;
+        // Add cases for other providers here when their service functions are implemented
         default:
           updateTask(taskId, 'FAILED', { error: { message: `Unsupported AI provider: ${provider}` } });
           break;

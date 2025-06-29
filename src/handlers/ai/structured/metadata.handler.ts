@@ -5,10 +5,7 @@ import {
 } from '../../../schemas/ai.schemas.js';
 import { structuredMetadataRoute } from '../../../routes/ai.routes.js';
 import { createTask, updateTask } from '../../../services/task.service.js';
-import { generateStructuredMetadataWithGemini } from '../../../services/ai/google.service.js';
-import { generateStructuredMetadataWithClaude } from '../../../services/ai/anthropic.service.js';
-import { generateStructuredMetadataWithGPT } from '../../../services/ai/openai.service.js';
-import { generateStructuredMetadataWithGrok } from '../../../services/ai/xai.service.js';
+import { generateStructuredMetadataWithGemini } from '../../../services/ai/google/structured-metadata.service.js';
 
 export const generateStructuredMetadataHandler = async (
   c: Context<
@@ -39,15 +36,7 @@ export const generateStructuredMetadataHandler = async (
         case 'google':
           await generateStructuredMetadataWithGemini(taskId, prompt, article, requestedModel);
           break;
-        case 'anthropic':
-          await generateStructuredMetadataWithClaude(taskId, prompt, article, requestedModel);
-          break;
-        case 'openai':
-          await generateStructuredMetadataWithGPT(taskId, prompt, article, requestedModel);
-          break;
-        case 'xai':
-          await generateStructuredMetadataWithGrok(taskId, prompt, article, requestedModel);
-          break;
+        // Add cases for other providers here when their service functions are implemented
         default:
           updateTask(taskId, 'FAILED', { error: { message: `Unsupported AI provider: ${provider}` } });
           break;

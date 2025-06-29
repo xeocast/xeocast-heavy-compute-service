@@ -6,11 +6,7 @@ import {
   type InferredVideoRequest,
 } from '../../schemas/ai.schemas.js';
 import { createTask, updateTask } from '../../services/task.service.js';
-// Import placeholder video generation services
-import { generateVideoWithGemini } from '../../services/ai/google.service.js';
-import { generateVideoWithGPT } from '../../services/ai/openai.service.js';
-import { generateVideoWithGrok } from '../../services/ai/xai.service.js';
-import { generateVideoWithClaude } from '../../services/ai/anthropic.service.js';
+import { generateVideoWithGemini } from '../../services/ai/google/video.service.js';
 import { videoRoute } from '../../routes/ai.routes.js';
 
 export const generateVideoHandler = async (
@@ -40,15 +36,7 @@ export const generateVideoHandler = async (
         case 'google':
           await generateVideoWithGemini(taskId, prompt, requestedModel);
           break;
-        case 'openai':
-          await generateVideoWithGPT(taskId, prompt, requestedModel);
-          break;
-        case 'xai':
-          await generateVideoWithGrok(taskId, prompt, requestedModel);
-          break;
-        case 'anthropic':
-          await generateVideoWithClaude(taskId, prompt, requestedModel);
-          break;
+        // Add cases for other providers here when their service functions are implemented
         default:
           updateTask(taskId, 'FAILED', { error: { message: `Unsupported AI provider: ${provider}` } });
           break;

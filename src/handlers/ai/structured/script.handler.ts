@@ -5,10 +5,7 @@ import {
 } from '../../../schemas/ai.schemas.js';
 import { structuredScriptRoute } from '../../../routes/ai.routes.js';
 import { createTask, updateTask } from '../../../services/task.service.js';
-import { generateStructuredScriptWithGemini } from '../../../services/ai/google.service.js';
-import { generateStructuredScriptWithClaude } from '../../../services/ai/anthropic.service.js';
-import { generateStructuredScriptWithGPT } from '../../../services/ai/openai.service.js';
-import { generateStructuredScriptWithGrok } from '../../../services/ai/xai.service.js';
+import { generateStructuredScriptWithGemini } from '../../../services/ai/google/structured-script.service.js';
 
 export const generateStructuredScriptHandler = async (
   c: Context<
@@ -37,15 +34,7 @@ export const generateStructuredScriptHandler = async (
         case 'google':
           await generateStructuredScriptWithGemini(taskId, prompt, article, requestedModel);
           break;
-        case 'anthropic':
-          await generateStructuredScriptWithClaude(taskId, prompt, article, requestedModel);
-          break;
-        case 'openai':
-          await generateStructuredScriptWithGPT(taskId, prompt, article, requestedModel);
-          break;
-        case 'xai':
-          await generateStructuredScriptWithGrok(taskId, prompt, article, requestedModel);
-          break;
+        // Add cases for other providers here when their service functions are implemented
         default:
           updateTask(taskId, 'FAILED', { error: { message: `Unsupported AI provider: ${provider}` } });
           break;

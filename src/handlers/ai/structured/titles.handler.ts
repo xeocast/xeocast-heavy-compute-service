@@ -6,7 +6,7 @@ import {
 } from '../../../schemas/ai.schemas.js';
 import { structuredTitlesRoute } from '../../../routes/ai.routes.js';
 import { createTask, updateTask } from '../../../services/task.service.js';
-import { generateStructuredTitlesWithGemini } from '../../../services/ai/google.service.js';
+import { generateStructuredTitlesWithGemini } from '../../../services/ai/google/structured-titles.service.js';
 
 // Extend the request schema to include a provider
 type InferredStructuredTitlesRequest = z.infer<typeof StructuredTitlesRequestSchema> & {

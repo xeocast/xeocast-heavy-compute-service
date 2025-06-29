@@ -57,6 +57,7 @@ export const BaseAIResponseSchema = z.object({
 export const MultiSpeakerSpeechRequestSchema = z.object({
   script: z.string().min(1, { message: 'Script cannot be empty' }),
   model: z.string().optional(), // Added optional model
+  provider: z.enum(['google', 'xai', 'openai', 'anthropic']).optional().default('google'),
   output_bucket_key: z.string().optional().describe('The R2 bucket key where the generated audio should be stored.'),
 }).openapi('MultiSpeakerSpeechRequest');
 
@@ -144,6 +145,7 @@ export const StructuredMetadataResponseSchema = z.object({
 export const SingleSpeakerSpeechRequestSchema = z.object({
   text: z.string().min(1, { message: 'Text cannot be empty' }),
   model: z.string().optional(),
+  provider: z.enum(['google', 'xai', 'openai', 'anthropic']).optional().default('google'),
   output_bucket_key: z.string().optional().describe('The R2 bucket key where the generated audio should be stored.'),
 }).openapi('SingleSpeakerSpeechRequest');
 

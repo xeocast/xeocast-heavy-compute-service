@@ -8,7 +8,6 @@ import {
   TextRequestSchema,
   ImageRequestSchema,
   VideoRequestSchema,
-  VideoResponseSchema,
   MultiSpeakerSpeechRequestSchema,
   SingleSpeakerSpeechRequestSchema,
   StructuredTitlesRequestSchema,

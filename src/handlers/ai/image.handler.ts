@@ -4,7 +4,7 @@ import {
   InferredImageRequest,
 } from '../../schemas/ai.schemas.js';
 import { createTask, updateTask } from '../../services/task.service.js';
-import { generateImageWithGemini } from '../../services/ai/google.service.js';
+import { generateImageWithGemini } from '../../services/ai/google/image.service.js';
 import { imageRoute } from '../../routes/ai.routes.js';
 
 export const generateImageHandler = async (
@@ -34,6 +34,7 @@ export const generateImageHandler = async (
         case 'google':
           await generateImageWithGemini(taskId, prompt, requestedModel);
           break;
+        // Add cases for other providers here when their service functions are implemented
         default:
           updateTask(taskId, 'FAILED', { error: { message: `Unsupported AI provider: ${provider}` } });
           break;

@@ -7,10 +7,7 @@ import {
 } from '../../schemas/ai.schemas.js';
 import { createTask, updateTask } from '../../services/task.service.js';
 import { musicRoute } from '../../routes/ai.routes.js';
-import { generateMusicWithGoogle } from '../../services/ai/google.service.js';
-import { generateMusicWithOpenAI } from '../../services/ai/openai.service.js';
-import { generateMusicWithXAI } from '../../services/ai/xai.service.js';
-import { generateMusicWithAnthropic } from '../../services/ai/anthropic.service.js';
+import { generateMusicWithGemini } from '../../services/ai/google/music.service.js';
 
 export const generateMusicHandler = async (
   c: Context<
@@ -37,17 +34,9 @@ export const generateMusicHandler = async (
 
       switch (provider) {
         case 'google':
-          await generateMusicWithGoogle(taskId, prompt, requestedModel);
+          await generateMusicWithGemini(taskId, prompt, requestedModel);
           break;
-        case 'openai':
-          await generateMusicWithOpenAI(taskId, prompt, requestedModel);
-          break;
-        case 'xai':
-          await generateMusicWithXAI(taskId, prompt, requestedModel);
-          break;
-        case 'anthropic':
-          await generateMusicWithAnthropic(taskId, prompt, requestedModel);
-          break;
+        // Add cases for other providers here when their service functions are implemented
         default:
           updateTask(taskId, 'FAILED', { error: { message: `Unsupported AI provider: ${provider}` } });
           break;

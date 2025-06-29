@@ -6,7 +6,7 @@ import {
 } from '../../schemas/ai.schemas.js';
 import { singleSpeakerSpeechRoute } from '../../routes/ai.routes.js';
 import { createTask, updateTask } from '../../services/task.service.js';
-import { generateSingleSpeakerAudio } from '../../services/ai/google.service.js';
+import { generateSingleSpeakerAudioWithGemini } from '../../services/ai/google/single-speaker-speech.service.js';
 
 export const generateSingleSpeakerSpeechHandler = async (
   c: Context<
@@ -21,7 +21,7 @@ export const generateSingleSpeakerSpeechHandler = async (
     return c.json({ error: 'Invalid request body' }, 400) as any;
   }
 
-  const { text, model, output_bucket_key } = validatedBody;
+  const { text, model, output_bucket_key, provider } = validatedBody;
 
   const taskId = createTask({ text, model, output_bucket_key, type: 'singleSpeakerAudioGeneration' });
 
@@ -31,7 +31,16 @@ export const generateSingleSpeakerSpeechHandler = async (
     try {
       updateTask(taskId, 'PROCESSING');
 
-      const generatedAudioResult = await generateSingleSpeakerAudio(text, model, output_bucket_key, taskId);
+      let generatedAudioResult;
+      switch (provider) {
+        case 'google':
+          generatedAudioResult = await generateSingleSpeakerAudioWithGemini(text, model, output_bucket_key, taskId);
+          break;
+        // Add cases for other providers here when their service functions are implemented
+        default:
+          updateTask(taskId, 'FAILED', { error: { message: `Unsupported AI provider: ${provider}` } });
+          break;
+      }
       updateTask(taskId, 'COMPLETED', { result: generatedAudioResult });
 
     } catch (error: any) {
