@@ -6,11 +6,10 @@ import {
   GenerateEpisodeAudioRequestSchema,
   type InferredGenerateEpisodeAudioRequest,
   // GenerateEpisodeAudioResponseSchema is used for the task's result structure
-} from '../../schemas/geminiSchemas.js';
+} from '../../schemas/ai.schemas.js';
 import { GoogleGenAI } from '@google/genai';
-import { createTask, updateTask } from '../../services/taskService.js';
+import { createTask, updateTask } from '../../services/task.service.js';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
-import mime from 'mime/lite';
 import { Writer } from 'wav';
 import { type Part, type GenerationConfig, Modality } from '@google/genai'; // Added Modality
 
@@ -134,7 +133,7 @@ export const generateEpisodeAudioHandler = async (
         return;
       }
 
-      const inlineData = audioPart.inlineData;
+      // const inlineData = audioPart.inlineData;
       const audioDataB64 = audioPart.inlineData.data;
       const originalMimeTypeFromApi = audioPart.inlineData.mimeType;
       console.log(`Task ${taskId}: Original MIME type from Gemini API: ${originalMimeTypeFromApi}`);
@@ -226,7 +225,7 @@ export const generateEpisodeAudioHandler = async (
       c.executionCtx.waitUntil(processAndCompleteTask());
       ranWithWaitUntil = true;
     }
-  } catch (e) {
+  } catch {
     // console.info('c.executionCtx.waitUntil is not available. Proceeding with standard async execution.');
   }
 

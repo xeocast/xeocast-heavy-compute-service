@@ -2,19 +2,19 @@ import { z } from 'zod';
 import type { Context } from 'hono';
 import {
   generateThumbnailImageRoute,
-  BaseGeminiRequestSchema,
+  BaseAIRequestSchema,
   GenerateImageResponseSchema,
-} from '../../schemas/geminiSchemas.js';
+} from '../../schemas/ai.schemas.js';
 import { GoogleGenAI } from '@google/genai';
 
 export const generateThumbnailImageHandler = async (
   c: Context<
     { Variables: {} },
     typeof generateThumbnailImageRoute.path,
-    { out: { json: z.infer<typeof BaseGeminiRequestSchema> } }
+    { out: { json: z.infer<typeof BaseAIRequestSchema> } }
   >
 ) => {
-  const validatedBody = (c.req as any).valid('json') as z.infer<typeof BaseGeminiRequestSchema>;
+  const validatedBody = (c.req as any).valid('json') as z.infer<typeof BaseAIRequestSchema>;
 
   if (!validatedBody) {
     return c.json({ error: 'Invalid request body' }, 400);

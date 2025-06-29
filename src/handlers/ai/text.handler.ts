@@ -2,23 +2,23 @@ import { z } from 'zod';
 import type { Context } from 'hono'; // Use base Hono Context due to @hono/zod-openapi type resolution issues
 import type { RouteConfigToTypedResponse } from '@hono/zod-openapi';
 import {
-  generateArticleRoute, // Import the route definition
-  GenerateArticleRequestSchema, // Keep for z.infer on response or if needed elsewhere
-  type InferredGenerateArticleRequest, // Import the new type alias
-  // GenerateArticleResponseSchema, // No longer directly returned by handler's immediate response, but its structure is used for task result
-} from '../../schemas/geminiSchemas.js';
+  textRoute, // Import the route definition
+  TextRequestSchema, // Keep for z.infer on response or if needed elsewhere
+  type InferredTextRequest, // Import the new type alias
+  // TextResponseSchema, // No longer directly returned by handler's immediate response, but its structure is used for task result
+} from '../../schemas/ai.schemas.js';
 import { GoogleGenAI } from '@google/genai'; // Reverted to GoogleGenAI
-import { createTask, updateTask } from '../../services/taskService.js';
+import { createTask, updateTask } from '../../services/task.service.js';
 
 // This is a skeleton handler. Implement the actual Gemini API call here.
-export const generateArticleHandler = async (
+export const textHandler = async (
   c: Context<
     { Variables: {} }, // Environment type, can be more specific if needed
-    typeof generateArticleRoute.path, // Path from your route definition
-    { out: { json: InferredGenerateArticleRequest } } // Use the explicit type alias for input
+    typeof textRoute.path, // Path from your route definition
+    { out: { json: InferredTextRequest } } // Use the explicit type alias for input
   >
-): Promise<RouteConfigToTypedResponse<typeof generateArticleRoute>> => {
-  const validatedBody = (c.req as any).valid('json') as z.infer<typeof GenerateArticleRequestSchema>;
+): Promise<RouteConfigToTypedResponse<typeof textRoute>> => {
+  const validatedBody = (c.req as any).valid('json') as z.infer<typeof TextRequestSchema>;
 
   if (!validatedBody) {
     // This should ideally be caught by zValidator, but as a fallback:
@@ -32,7 +32,7 @@ export const generateArticleHandler = async (
 
   // 2. Immediately set the response to be sent to the client.
   // Hono will send this response. 202 Accepted is appropriate for long-running tasks.
-  c.res = c.json({ taskId: taskId, message: "Article generation task created and processing started." }, 202);
+  c.res = c.json({ taskId: taskId, message: "Text generation task created and processing started." }, 202);
 
   // 3. Define and execute the Gemini processing and task update logic asynchronously.
   const processAndCompleteTask = async () => {
@@ -70,10 +70,10 @@ export const generateArticleHandler = async (
       updateTask(taskId, 'COMPLETED', { result: resultPayload });
 
     } catch (error: any) {
-      console.error(`Task ${taskId}: Error during article generation: ${error.message}`, error);
+      console.error(`Task ${taskId}: Error during text generation: ${error.message}`, error);
       updateTask(taskId, 'FAILED', {
         error: {
-          message: error.message || 'Unknown error during article generation',
+          message: error.message || 'Unknown error during text generation',
           details: error.stack || error.toString(), // Include stack for better debugging
         },
       });

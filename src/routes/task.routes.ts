@@ -1,7 +1,7 @@
 import { OpenAPIHono } from '@hono/zod-openapi';
-import { getTaskRoute, listTasksRoute } from '../schemas/taskSchemas.js';
-import { getTaskHandler } from '../handlers/tasks/getTaskHandler.js';
-import { listTasksHandler } from '../handlers/tasks/listTasksHandler.js';
+import { getTaskRoute, listTasksRoute } from '../schemas/task.schemas.js';
+import { getTaskHandler } from '../handlers/tasks/get-task.handler.js';
+import { listTasksHandler } from '../handlers/tasks/list-tasks.handler.js';
 import { bearerAuth } from '../middlewares/auth.js';
 
 const taskRoutes = new OpenAPIHono<{ Variables: {} }>();

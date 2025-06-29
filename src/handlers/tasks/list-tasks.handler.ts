@@ -1,5 +1,5 @@
 import { Context } from 'hono';
-import { getAllTasks } from '../../services/taskService.js';
+import { getAllTasks } from '../../services/task.service.js';
 
 export const listTasksHandler = async (c: Context<{ Variables: {} }>) => {
   const tasks = getAllTasks();

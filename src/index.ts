@@ -1,9 +1,8 @@
 import { OpenAPIHono } from '@hono/zod-openapi';
 import { cors } from 'hono/cors';
 import { swaggerUI } from '@hono/swagger-ui';
-import geminiRoutes from './routes/geminiRoutes.js';
-import taskRoutes from './routes/taskRoutes.js';
-import storageRoutes from './routes/storageRoutes.js';
+import aiRoutes from './routes/ai.routes.js';
+import taskRoutes from './routes/task.routes.js';
 import { HTTPException } from 'hono/http-exception';
 
 import 'dotenv/config';
@@ -23,11 +22,10 @@ app.get('/', (c) => {
 });
 
 // Mount API routes
-// All routes under geminiRoutes will be prefixed with /gemini
-// e.g., /gemini/generate-content
-app.route('/gemini', geminiRoutes);
+// All routes under aiRoutes will be prefixed with /ai
+// e.g., /ai/text
+app.route('/ai', aiRoutes);
 app.route('/tasks', taskRoutes);
-app.route('/storage', storageRoutes);
 
 // OpenAPI Specification Route
 app.doc('/doc', {
@@ -35,7 +33,7 @@ app.doc('/doc', {
   info: {
     version: '1.0.0',
     title: 'Xeocast Heavy Compute API',
-    description: 'API for heavy computation tasks, including Gemini integration.',
+    description: 'API for heavy computation tasks.',
   },
   // You can add servers, security schemes, etc.
   // servers: [

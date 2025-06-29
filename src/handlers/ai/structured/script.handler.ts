@@ -5,9 +5,9 @@ import {
   generateEpisodeScriptRoute, // Import the route definition
   GenerateEpisodeScriptRequestSchema, // Keep for z.infer on response or if needed elsewhere
   // GenerateEpisodeScriptResponseSchema, // No longer directly returned by handler's immediate response
-} from '../../schemas/geminiSchemas.js';
+} from '../../../schemas/ai.schemas.js';
 import { GoogleGenAI, Type } from '@google/genai';
-import { createTask, updateTask } from '../../services/taskService.js';
+import { createTask, updateTask } from '../../../services/task.service.js';
 
 // Define the type for the input based on the Zod schema
 type InferredGenerateEpisodeScriptRequest = z.infer<typeof GenerateEpisodeScriptRequestSchema>;
@@ -117,7 +117,7 @@ export const generateEpisodeScriptHandler = async (
       c.executionCtx.waitUntil(processAndCompleteTask());
       ranWithWaitUntil = true;
     }
-  } catch (e) {
+  } catch {
     // console.info('c.executionCtx.waitUntil is not available. Proceeding with standard async execution.');
   }
 

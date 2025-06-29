@@ -1,26 +1,21 @@
 import { z } from 'zod';
 import type { Context } from 'hono';
+import { RouteConfigToTypedResponse } from '@hono/zod-openapi';
 import {
-  generateNewsTitlesRoute,
-  BaseGeminiRequestSchema,
+  GenerateStructuredTitlesRoute,
+  GenerateStructuredTitlesRequestSchema,
   GenerateTitlesResponseSchema,
-} from '../../schemas/geminiSchemas.js';
+} from '../../../schemas/ai.schemas.js';
 import { GoogleGenAI, Type } from '@google/genai';
 
-export const generateNewsTitlesHandler = async (
+export const titlesHandler = async (
   c: Context<
     { Variables: {} },
-    typeof generateNewsTitlesRoute.path,
-    { out: { json: z.infer<typeof BaseGeminiRequestSchema> } }
+    typeof GenerateStructuredTitlesRoute.path,
+    { out: { json: z.infer<typeof GenerateStructuredTitlesRequestSchema> } }
   >
-) => {
-  const validatedBody = (c.req as any).valid('json') as z.infer<typeof BaseGeminiRequestSchema>;
-
-  if (!validatedBody) {
-    return c.json({ error: 'Invalid request body' }, 400);
-  }
-
-  const { prompt, model } = validatedBody;
+): Promise<RouteConfigToTypedResponse<typeof GenerateStructuredTitlesRoute>> => {
+  const { prompt, model } = c.req.valid('json');
 
   // Check if GEMINI_API_KEY is set.
   if (!process.env.GEMINI_API_KEY) {

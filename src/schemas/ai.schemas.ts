@@ -1,17 +1,17 @@
 import { z } from 'zod';
 import { createRoute } from '@hono/zod-openapi';
 
-export const GenerateArticleRequestSchema = z.object({
+export const TextRequestSchema = z.object({
   prompt: z.string().min(1, { message: 'Prompt cannot be empty' }),
   model: z.string().optional(),
-}).openapi('GenerateArticleRequest');
+}).openapi('TextRequest');
 
-export type InferredGenerateArticleRequest = z.infer<typeof GenerateArticleRequestSchema>;
+export type InferredTextRequest = z.infer<typeof TextRequestSchema>;
 
-export const GenerateArticleResponseSchema = z.object({
+export const TextResponseSchema = z.object({
   generatedText: z.string(),
   status: z.string(),
-}).openapi('GenerateArticleResponse');
+}).openapi('TextResponse');
 
 export const ErrorSchema = z.object({
   error: z.string(),
@@ -22,15 +22,15 @@ export const TaskCreationResponseSchema = z.object({
   message: z.string(),
 }).openapi('TaskCreationResponse');
 
-// /gemini/generate-article
-export const generateArticleRoute = createRoute({
+// /ai/text
+export const textRoute = createRoute({
   method: 'post',
-  path: '/generate-article',
+  path: '/text',
   request: {
     body: {
       content: {
         'application/json': {
-          schema: GenerateArticleRequestSchema,
+          schema: TextRequestSchema,
         },
       },
       description: 'Prompt for content generation',
@@ -43,7 +43,7 @@ export const generateArticleRoute = createRoute({
           schema: TaskCreationResponseSchema,
         },
       },
-      description: 'Task accepted. Poll the linked endpoint to check for completion. The final result will conform to the `GenerateArticleResponse` schema.',
+      description: 'Task accepted. Poll the linked endpoint to check for completion. The final result will conform to the `TextResponse` schema.',
       links: {
         getTaskStatus: {
           operationId: 'getTaskStatus',
@@ -88,20 +88,20 @@ export const generateArticleRoute = createRoute({
       },
     },
   },
-  summary: 'Generate an article using a prompt',
-  tags: ['Gemini'],
+  summary: 'Generate text using a prompt',
+  tags: ['AI'],
 });
 
-// --- Base Schemas for new Gemini Endpoints ---
-export const BaseGeminiRequestSchema = z.object({
+// --- Base Schemas for new AI Endpoints ---
+export const BaseAIRequestSchema = z.object({
   prompt: z.string().min(1, { message: 'Prompt cannot be empty' }),
   model: z.string().optional(),
-}).openapi('BaseGeminiRequest');
+}).openapi('BaseAIRequest');
 
-export const BaseGeminiResponseSchema = z.object({
+export const BaseAIResponseSchema = z.object({
   result: z.string(), // Generic result field
   status: z.string(),
-}).openapi('BaseGeminiResponse');
+}).openapi('BaseAIResponse');
 
 // Specific Schemas for certain Gemini Endpoints
 export const GenerateEpisodeAudioRequestSchema = z.object({ 
@@ -156,21 +156,23 @@ export const GenerateTitlesResponseSchema = z.object({
   status: z.string(),
 }).openapi('GenerateTitlesResponse');
 
+// POST /ai/structured/titles
+export const GenerateStructuredTitlesRequestSchema = z.object({
+  prompt: z.string().openapi({ example: 'How to learn to code' }),
+  model: z.string().openapi({ example: 'gemini-1.5-pro-latest' }),
+}).openapi('GenerateStructuredTitlesRequest');
 
-// --- Route Definitions for New Gemini Endpoints ---
-
-// POST /gemini/generate-evergreen-titles
-export const generateEvergreenTitlesRoute = createRoute({
+export const GenerateStructuredTitlesRoute = createRoute({
   method: 'post',
-  path: '/generate-evergreen-titles',
+  path: '/structured/titles',
   request: {
     body: {
       content: {
         'application/json': {
-          schema: BaseGeminiRequestSchema,
+          schema: GenerateStructuredTitlesRequestSchema,
         },
       },
-      description: 'Prompt for generating evergreen titles',
+      description: 'Prompt for generating structured titles',
     },
   },
   responses: {
@@ -180,15 +182,15 @@ export const generateEvergreenTitlesRoute = createRoute({
           schema: GenerateTitlesResponseSchema,
         },
       },
-      description: 'Evergreen titles generated successfully',
+      description: 'Structured titles generated successfully',
     },
     400: { description: 'Bad Request', content: { 'application/json': { schema: ErrorSchema } } },
     401: { description: 'Unauthorized', content: { 'application/json': { schema: ErrorSchema } } },
     403: { description: 'Forbidden', content: { 'application/json': { schema: ErrorSchema } } },
     500: { description: 'Internal Server Error', content: { 'application/json': { schema: ErrorSchema } } },
   },
-  summary: 'Generate evergreen titles',
-  tags: ['Gemini'],
+  summary: 'Generate structured titles',
+  tags: ['AI'],
 });
 
 // POST /gemini/generate-news-titles
@@ -199,7 +201,7 @@ export const generateNewsTitlesRoute = createRoute({
     body: {
       content: {
         'application/json': {
-          schema: BaseGeminiRequestSchema,
+          schema: BaseAIRequestSchema,
         },
       },
       description: 'Prompt for generating news titles',
@@ -220,7 +222,7 @@ export const generateNewsTitlesRoute = createRoute({
     500: { description: 'Internal Server Error', content: { 'application/json': { schema: ErrorSchema } } },
   },
   summary: 'Generate news titles',
-  tags: ['Gemini'],
+  tags: ['AI'],
 });
 
 // --- Specific Schemas for GenerateArticleMetadata ---
@@ -248,7 +250,7 @@ export const generateSeriesTitlesRoute = createRoute({
     body: {
       content: {
         'application/json': {
-          schema: BaseGeminiRequestSchema,
+          schema: BaseAIRequestSchema,
         },
       },
       description: 'Prompt for generating series titles',
@@ -258,7 +260,7 @@ export const generateSeriesTitlesRoute = createRoute({
     200: {
       content: {
         'application/json': {
-          schema: BaseGeminiResponseSchema,
+          schema: BaseAIResponseSchema,
         },
       },
       description: 'Series titles generated successfully',
@@ -269,7 +271,7 @@ export const generateSeriesTitlesRoute = createRoute({
     500: { description: 'Internal Server Error', content: { 'application/json': { schema: ErrorSchema } } },
   },
   summary: 'Generate series titles',
-  tags: ['Gemini'],
+  tags: ['AI'],
 });
 
 // POST /gemini/generate-article-metadata
@@ -301,7 +303,7 @@ export const generateArticleMetadataRoute = createRoute({
     500: { description: 'Internal Server Error', content: { 'application/json': { schema: ErrorSchema } } },
   },
   summary: 'Generate article metadata',
-  tags: ['Gemini'],
+  tags: ['AI'],
 });
 
 // POST /gemini/generate-episode-script
@@ -333,7 +335,7 @@ export const generateEpisodeScriptRoute = createRoute({
     500: { description: 'Internal Server Error', content: { 'application/json': { schema: ErrorSchema } } },
   },
   summary: 'Generate a episode script',
-  tags: ['Gemini'],
+  tags: ['AI'],
 });
 
 // POST /gemini/generate-episode-audio
@@ -365,7 +367,7 @@ export const generateEpisodeAudioRoute = createRoute({
     500: { description: 'Internal Server Error', content: { 'application/json': { schema: ErrorSchema } } },
   },
   summary: 'Initiate generation of episode audio from script (asynchronous)',
-  tags: ['Gemini'],
+  tags: ['AI'],
 });
 
 // POST /gemini/generate-thumbnail-image
@@ -376,7 +378,7 @@ export const generateThumbnailImageRoute = createRoute({
     body: {
       content: {
         'application/json': {
-          schema: BaseGeminiRequestSchema, // Prompt for image generation
+          schema: BaseAIRequestSchema, // Prompt for image generation
         },
       },
       description: 'Prompt for generating a thumbnail image',
@@ -397,7 +399,7 @@ export const generateThumbnailImageRoute = createRoute({
     500: { description: 'Internal Server Error', content: { 'application/json': { schema: ErrorSchema } } },
   },
   summary: 'Generate a thumbnail image',
-  tags: ['Gemini'],
+  tags: ['AI'],
 });
 
 // POST /gemini/generate-article-image
@@ -408,7 +410,7 @@ export const generateArticleImageRoute = createRoute({
     body: {
       content: {
         'application/json': {
-          schema: BaseGeminiRequestSchema, // Prompt for image generation
+          schema: BaseAIRequestSchema, // Prompt for image generation
         },
       },
       description: 'Prompt for generating an article image',
@@ -429,7 +431,7 @@ export const generateArticleImageRoute = createRoute({
     500: { description: 'Internal Server Error', content: { 'application/json': { schema: ErrorSchema } } },
   },
   summary: 'Generate an article image',
-  tags: ['Gemini'],
+  tags: ['AI'],
 });
 
 // POST /gemini/generate-intro-music
@@ -440,7 +442,7 @@ export const generateIntroMusicRoute = createRoute({
     body: {
       content: {
         'application/json': {
-          schema: BaseGeminiRequestSchema, // Prompt for music generation (e.g., mood, genre, length)
+          schema: BaseAIRequestSchema, // Prompt for music generation (e.g., mood, genre, length)
         },
       },
       description: 'Prompt for generating intro music',
@@ -461,7 +463,7 @@ export const generateIntroMusicRoute = createRoute({
     500: { description: 'Internal Server Error', content: { 'application/json': { schema: ErrorSchema } } },
   },
   summary: 'Generate intro music',
-  tags: ['Gemini'],
+  tags: ['AI'],
 });
 
 // POST /gemini/generate-background-music
@@ -472,7 +474,7 @@ export const generateBackgroundMusicRoute = createRoute({
     body: {
       content: {
         'application/json': {
-          schema: BaseGeminiRequestSchema, // Prompt for music generation
+          schema: BaseAIRequestSchema, // Prompt for music generation
         },
       },
       description: 'Prompt for generating background music',
@@ -493,6 +495,6 @@ export const generateBackgroundMusicRoute = createRoute({
     500: { description: 'Internal Server Error', content: { 'application/json': { schema: ErrorSchema } } },
   },
   summary: 'Generate background music',
-  tags: ['Gemini'],
+  tags: ['AI'],
 });
 

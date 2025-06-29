@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { Task, TaskStatus, TaskSchema } from '../schemas/taskSchemas.js';
+import { Task, TaskStatus, TaskSchema } from '../schemas/task.schemas.js';
 
 const tasks = new Map<string, Task>();
 

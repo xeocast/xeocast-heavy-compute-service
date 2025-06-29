@@ -1,14 +1,14 @@
 import { z } from 'zod';
 import { createRoute } from '@hono/zod-openapi';
 import {
-  GenerateArticleResponseSchema,
+  TextResponseSchema,
   GenerateTitlesResponseSchema,
   GenerateEpisodeScriptResponseSchema,
   GenerateEpisodeAudioResponseSchema,
   GenerateImageResponseSchema,
   GenerateMusicResponseSchema,
-  BaseGeminiResponseSchema,
-} from './geminiSchemas.js';
+  BaseAIResponseSchema,
+} from './ai.schemas.js';
 
 // --- Base Task Schemas ---
 
@@ -54,7 +54,7 @@ export const CompletedGenerateArticleTaskSchema = z
     createdAt: z.string().datetime(),
     updatedAt: z.string().datetime(),
     input: z.any().optional(),
-    result: GenerateArticleResponseSchema, // <-- Embed the specific result schema
+    result: TextResponseSchema, // <-- Embed the specific result schema
   })
   .openapi('CompletedGenerateArticleTask');
 
@@ -126,7 +126,7 @@ export const CompletedBaseGeminiTaskSchema = z
     createdAt: z.string().datetime(),
     updatedAt: z.string().datetime(),
     input: z.any().optional(),
-    result: BaseGeminiResponseSchema,
+    result: BaseAIResponseSchema,
   })
   .openapi('CompletedBaseGeminiTask');
 
