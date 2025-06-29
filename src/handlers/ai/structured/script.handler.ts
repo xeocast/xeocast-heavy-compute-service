@@ -1,22 +1,22 @@
 import { z } from 'zod';
 import type { Context } from 'hono'; // Use base Hono Context
 import type { RouteConfigToTypedResponse } from '@hono/zod-openapi';
-import { GenerateEpisodeScriptRequestSchema } from '../../../schemas/ai.schemas.js';
-import { generateEpisodeScriptRoute } from '../../../routes/ai.routes.js';
+import { GenerateStructuredScriptRequestSchema } from '../../../schemas/ai.schemas.js';
+import { generateStructuredScriptRoute } from '../../../routes/ai.routes.js';
 import { GoogleGenAI, Type } from '@google/genai';
 import { createTask, updateTask } from '../../../services/task.service.js';
 
 // Define the type for the input based on the Zod schema
-type InferredGenerateEpisodeScriptRequest = z.infer<typeof GenerateEpisodeScriptRequestSchema>;
+type InferredGenerateStructuredScriptRequest = z.infer<typeof GenerateStructuredScriptRequestSchema>;
 
-export const generateEpisodeScriptHandler = async (
+export const scriptHandler = async (
   c: Context<
     { Variables: {} }, // Environment type
-    typeof generateEpisodeScriptRoute.path, // Path from route definition
-    { out: { json: InferredGenerateEpisodeScriptRequest } } // Input type for validation
+    typeof generateStructuredScriptRoute.path, // Path from route definition
+    { out: { json: InferredGenerateStructuredScriptRequest } } // Input type for validation
   >
-): Promise<RouteConfigToTypedResponse<typeof generateEpisodeScriptRoute>> => {
-  const validatedBody = (c.req as any).valid('json') as InferredGenerateEpisodeScriptRequest;
+): Promise<RouteConfigToTypedResponse<typeof generateStructuredScriptRoute>> => {
+  const validatedBody = (c.req as any).valid('json') as InferredGenerateStructuredScriptRequest;
 
   if (!validatedBody) {
     return c.json({ error: 'Invalid request body' }, 400) as any;

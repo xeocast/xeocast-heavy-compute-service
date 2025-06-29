@@ -5,9 +5,10 @@ import {
   TextRequestSchema,
   ErrorSchema,
   TaskCreationResponseSchema,
-  BaseAIRequestSchema,
-  GenerateEpisodeAudioRequestSchema,
-  GenerateEpisodeScriptRequestSchema,
+  // New Schemas
+  BaseAIRequestSchema, // For most new routes
+  GenerateEpisodeAudioRequestSchema, // Specific for episode audio
+  GenerateStructuredScriptRequestSchema,
   GenerateStructuredTitlesRequestSchema,
   GenerateTitlesResponseSchema,
   GenerateStructuredMetadataRequestSchema,
@@ -17,9 +18,10 @@ import {
 
 } from '../schemas/ai.schemas.js';
 import { textHandler } from '../handlers/ai/text.handler.js';
+// New Handlers
 import { titlesHandler } from '../handlers/ai/structured/titles.handler.js';
 import { generateStructuredMetadataHandler } from '../handlers/ai/structured/metadata.handler.js';
-import { generateEpisodeScriptHandler } from '../handlers/ai/structured/script.handler.js';
+import { scriptHandler } from '../handlers/ai/structured/script.handler.js';
 import { generateEpisodeAudioHandler } from '../handlers/ai/multi-speaker-speech.js';
 import { generateThumbnailImageHandler } from '../handlers/ai/image.handler.js';
 import { generateArticleImageHandler } from '../handlers/ai/music.handler.js';
@@ -93,102 +95,6 @@ export const textRoute = createRoute({
     },
   },
   summary: 'Generate text using a prompt',
-  tags: ['AI'],
-});
-
-// POST /ai/structured/titles
-export const GenerateStructuredTitlesRoute = createRoute({
-  method: 'post',
-  path: '/structured/titles',
-  request: {
-    body: {
-      content: {
-        'application/json': {
-          schema: GenerateStructuredTitlesRequestSchema,
-        },
-      },
-      description: 'Prompt for generating structured titles',
-    },
-  },
-  responses: {
-    200: {
-      content: {
-        'application/json': {
-          schema: GenerateTitlesResponseSchema,
-        },
-      },
-      description: 'Structured titles generated successfully',
-    },
-    400: { description: 'Bad Request', content: { 'application/json': { schema: ErrorSchema } } },
-    401: { description: 'Unauthorized', content: { 'application/json': { schema: ErrorSchema } } },
-    403: { description: 'Forbidden', content: { 'application/json': { schema: ErrorSchema } } },
-    500: { description: 'Internal Server Error', content: { 'application/json': { schema: ErrorSchema } } },
-  },
-  summary: 'Generate structured titles',
-  tags: ['AI'],
-});
-
-// POST /ai/structured/metadata
-export const generateStructuredMetadataRoute = createRoute({
-  method: 'post',
-  path: '/structured/metadata',
-  request: {
-    body: {
-      content: {
-        'application/json': {
-          schema: GenerateStructuredMetadataRequestSchema,
-        },
-      },
-      description: 'Prompt and article for generating structured metadata',
-    },
-  },
-  responses: {
-    200: {
-      content: {
-        'application/json': {
-          schema: GenerateStructuredMetadataResponseSchema,
-        },
-      },
-      description: 'Structured metadata generated successfully',
-    },
-    400: { description: 'Bad Request', content: { 'application/json': { schema: ErrorSchema } } },
-    401: { description: 'Unauthorized', content: { 'application/json': { schema: ErrorSchema } } },
-    403: { description: 'Forbidden', content: { 'application/json': { schema: ErrorSchema } } },
-    500: { description: 'Internal Server Error', content: { 'application/json': { schema: ErrorSchema } } },
-  },
-  summary: 'Generate structured metadata',
-  tags: ['AI'],
-});
-
-// POST /gemini/generate-episode-script
-export const generateEpisodeScriptRoute = createRoute({
-  method: 'post',
-  path: '/generate-episode-script',
-  request: {
-    body: {
-      content: {
-        'application/json': {
-          schema: GenerateEpisodeScriptRequestSchema,
-        },
-      },
-      description: 'Prompt for generating a episode script',
-    },
-  },
-  responses: {
-    202: {
-      content: {
-        'application/json': {
-          schema: TaskCreationResponseSchema, // Use the existing schema for task creation responses
-        },
-      },
-      description: 'Task created successfully and episode script generation is being processed',
-    },
-    400: { description: 'Bad Request', content: { 'application/json': { schema: ErrorSchema } } },
-    401: { description: 'Unauthorized', content: { 'application/json': { schema: ErrorSchema } } },
-    403: { description: 'Forbidden', content: { 'application/json': { schema: ErrorSchema } } },
-    500: { description: 'Internal Server Error', content: { 'application/json': { schema: ErrorSchema } } },
-  },
-  summary: 'Generate a episode script',
   tags: ['AI'],
 });
 
@@ -288,6 +194,102 @@ export const generateBackgroundMusicRoute = createRoute({
   tags: ['AI'],
 });
 
+// POST /ai/structured/titles
+export const GenerateStructuredTitlesRoute = createRoute({
+  method: 'post',
+  path: '/structured/titles',
+  request: {
+    body: {
+      content: {
+        'application/json': {
+          schema: GenerateStructuredTitlesRequestSchema,
+        },
+      },
+      description: 'Prompt for generating structured titles',
+    },
+  },
+  responses: {
+    200: {
+      content: {
+        'application/json': {
+          schema: GenerateTitlesResponseSchema,
+        },
+      },
+      description: 'Structured titles generated successfully',
+    },
+    400: { description: 'Bad Request', content: { 'application/json': { schema: ErrorSchema } } },
+    401: { description: 'Unauthorized', content: { 'application/json': { schema: ErrorSchema } } },
+    403: { description: 'Forbidden', content: { 'application/json': { schema: ErrorSchema } } },
+    500: { description: 'Internal Server Error', content: { 'application/json': { schema: ErrorSchema } } },
+  },
+  summary: 'Generate structured titles',
+  tags: ['AI'],
+});
+
+// POST /ai/structured/metadata
+export const generateStructuredMetadataRoute = createRoute({
+  method: 'post',
+  path: '/structured/metadata',
+  request: {
+    body: {
+      content: {
+        'application/json': {
+          schema: GenerateStructuredMetadataRequestSchema,
+        },
+      },
+      description: 'Prompt and article for generating structured metadata',
+    },
+  },
+  responses: {
+    200: {
+      content: {
+        'application/json': {
+          schema: GenerateStructuredMetadataResponseSchema,
+        },
+      },
+      description: 'Structured metadata generated successfully',
+    },
+    400: { description: 'Bad Request', content: { 'application/json': { schema: ErrorSchema } } },
+    401: { description: 'Unauthorized', content: { 'application/json': { schema: ErrorSchema } } },
+    403: { description: 'Forbidden', content: { 'application/json': { schema: ErrorSchema } } },
+    500: { description: 'Internal Server Error', content: { 'application/json': { schema: ErrorSchema } } },
+  },
+  summary: 'Generate structured metadata',
+  tags: ['AI'],
+});
+
+// POST /ai/structured/script
+export const generateStructuredScriptRoute = createRoute({
+  method: 'post',
+  path: '/structured/script',
+  request: {
+    body: {
+      content: {
+        'application/json': {
+          schema: GenerateStructuredScriptRequestSchema,
+        },
+      },
+      description: 'Prompt for generating a episode script',
+    },
+  },
+  responses: {
+    202: {
+      content: {
+        'application/json': {
+          schema: TaskCreationResponseSchema, // Use the existing schema for task creation responses
+        },
+      },
+      description: 'Task created successfully and episode script generation is being processed',
+    },
+    400: { description: 'Bad Request', content: { 'application/json': { schema: ErrorSchema } } },
+    401: { description: 'Unauthorized', content: { 'application/json': { schema: ErrorSchema } } },
+    403: { description: 'Forbidden', content: { 'application/json': { schema: ErrorSchema } } },
+    500: { description: 'Internal Server Error', content: { 'application/json': { schema: ErrorSchema } } },
+  },
+  summary: 'Generate a structured script',
+  tags: ['AI'],
+});
+
 export const aiRoutes = new OpenAPIHono<{ Variables: {} }>();
 
 // --- Register New Gemini Endpoints ---
@@ -297,7 +299,7 @@ const newRouteConfigs = [
   { route: GenerateStructuredTitlesRoute, handler: titlesHandler, requestSchema: GenerateStructuredTitlesRequestSchema },
   { route: textRoute, handler: textHandler, requestSchema: TextRequestSchema },
   { route: generateStructuredMetadataRoute, handler: generateStructuredMetadataHandler, requestSchema: GenerateStructuredMetadataRequestSchema },
-  { route: generateEpisodeScriptRoute, handler: generateEpisodeScriptHandler, requestSchema: GenerateEpisodeScriptRequestSchema },
+  { route: generateStructuredScriptRoute, handler: scriptHandler, requestSchema: GenerateStructuredScriptRequestSchema },
   { route: generateEpisodeAudioRoute, handler: generateEpisodeAudioHandler, requestSchema: GenerateEpisodeAudioRequestSchema },
   { route: generateThumbnailImageRoute, handler: generateThumbnailImageHandler, requestSchema: BaseAIRequestSchema },
   { route: generateBackgroundMusicRoute, handler: generateBackgroundMusicHandler, requestSchema: BaseAIRequestSchema },
@@ -310,12 +312,12 @@ newRouteConfigs.forEach(({ route, requestSchema }) => {
 });
 
 // Define OpenAPI routes individually for type safety
-aiRoutes.openapi(GenerateStructuredTitlesRoute, titlesHandler);
 aiRoutes.openapi(textRoute, textHandler);
-aiRoutes.openapi(generateStructuredMetadataRoute, generateStructuredMetadataHandler);
-aiRoutes.openapi(generateEpisodeScriptRoute, generateEpisodeScriptHandler);
-aiRoutes.openapi(generateEpisodeAudioRoute, generateEpisodeAudioHandler);
 aiRoutes.openapi(generateThumbnailImageRoute, generateThumbnailImageHandler);
+aiRoutes.openapi(generateEpisodeAudioRoute, generateEpisodeAudioHandler);
 aiRoutes.openapi(generateBackgroundMusicRoute, generateBackgroundMusicHandler);
+aiRoutes.openapi(GenerateStructuredTitlesRoute, titlesHandler);
+aiRoutes.openapi(generateStructuredMetadataRoute, generateStructuredMetadataHandler);
+aiRoutes.openapi(generateStructuredScriptRoute, scriptHandler);
 
 export default aiRoutes;

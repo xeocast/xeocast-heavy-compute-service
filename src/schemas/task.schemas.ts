@@ -2,7 +2,7 @@ import { z } from 'zod';
 import {
   TextResponseSchema,
   GenerateTitlesResponseSchema,
-  GenerateEpisodeScriptResponseSchema,
+  GenerateStructuredScriptResponseSchema,
   GenerateEpisodeAudioResponseSchema,
   GenerateImageResponseSchema,
   GenerateMusicResponseSchema,
@@ -77,7 +77,7 @@ export const CompletedGenerateScriptTaskSchema = z
     createdAt: z.string().datetime(),
     updatedAt: z.string().datetime(),
     input: z.any().optional(),
-    result: GenerateEpisodeScriptResponseSchema,
+    result: GenerateStructuredScriptResponseSchema,
   })
   .openapi('CompletedGenerateScriptTask');
 
