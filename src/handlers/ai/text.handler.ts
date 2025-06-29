@@ -7,9 +7,9 @@ import {
 } from '../../schemas/ai.schemas.js';
 import { createTask, updateTask } from '../../services/task.service.js';
 import { generateTextWithGemini } from '../../services/ai/google.service.js';
-import { generateTextWithGPT } from '../../services/ai/openai.services.js';
-import { generateTextWithGrok } from '../../services/ai/xai.services.js';
-import { generateTextWithClaude } from '../../services/ai/anthropic.services.js';
+import { generateTextWithGPT } from '../../services/ai/openai.service.js';
+import { generateTextWithGrok } from '../../services/ai/xai.service.js';
+import { generateTextWithClaude } from '../../services/ai/anthropic.service.js';
 import { textRoute } from '../../routes/ai.routes.js';
 
 export const generateTextHandler = async (

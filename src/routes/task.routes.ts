@@ -12,6 +12,7 @@ import { bearerAuth } from '../middlewares/auth.js';
 
 // --- Route Definitions ---
 
+// GET /tasks
 export const listTasksRoute = createRoute({
   method: 'get',
   tags: ['Tasks'],
@@ -28,6 +29,7 @@ export const listTasksRoute = createRoute({
   },
 });
 
+// GET /tasks/{taskId}
 export const getTaskRoute = createRoute({
   method: 'get',
   tags: ['Tasks'],
