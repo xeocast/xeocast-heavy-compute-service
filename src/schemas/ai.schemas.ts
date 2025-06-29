@@ -1,5 +1,4 @@
 import { z } from 'zod';
-import { createRoute } from '@hono/zod-openapi';
 
 export const TextRequestSchema = z.object({
   prompt: z.string().min(1, { message: 'Prompt cannot be empty' }),
@@ -108,35 +107,3 @@ export const GenerateStructuredMetadataResponseSchema = z.object({
   }),
   status: z.string(),
 }).openapi('GenerateStructuredMetadataResponse');
-
-// POST /gemini/generate-intro-music
-export const generateIntroMusicRoute = createRoute({
-  method: 'post',
-  path: '/generate-intro-music',
-  request: {
-    body: {
-      content: {
-        'application/json': {
-          schema: BaseAIRequestSchema, // Prompt for music generation (e.g., mood, genre, length)
-        },
-      },
-      description: 'Prompt for generating intro music',
-    },
-  },
-  responses: {
-    200: {
-      content: {
-        'application/json': { 
-          schema: GenerateMusicResponseSchema,
-        },
-      },
-      description: 'Intro music generated successfully',
-    },
-    400: { description: 'Bad Request', content: { 'application/json': { schema: ErrorSchema } } },
-    401: { description: 'Unauthorized', content: { 'application/json': { schema: ErrorSchema } } },
-    403: { description: 'Forbidden', content: { 'application/json': { schema: ErrorSchema } } },
-    500: { description: 'Internal Server Error', content: { 'application/json': { schema: ErrorSchema } } },
-  },
-  summary: 'Generate intro music',
-  tags: ['AI'],
-});

@@ -5,9 +5,8 @@ import {
   TextRequestSchema,
   ErrorSchema,
   TaskCreationResponseSchema,
-  // New Schemas
-  BaseAIRequestSchema, // For most new routes
-  GenerateEpisodeAudioRequestSchema, // Specific for episode audio
+  BaseAIRequestSchema,
+  GenerateEpisodeAudioRequestSchema,
   GenerateEpisodeScriptRequestSchema,
   GenerateStructuredTitlesRequestSchema,
   GenerateTitlesResponseSchema,
@@ -18,7 +17,6 @@ import {
 
 } from '../schemas/ai.schemas.js';
 import { textHandler } from '../handlers/ai/text.handler.js';
-// New Handlers
 import { titlesHandler } from '../handlers/ai/structured/titles.handler.js';
 import { generateStructuredMetadataHandler } from '../handlers/ai/structured/metadata.handler.js';
 import { generateEpisodeScriptHandler } from '../handlers/ai/structured/script.handler.js';
@@ -130,71 +128,7 @@ export const GenerateStructuredTitlesRoute = createRoute({
   tags: ['AI'],
 });
 
-// POST /gemini/generate-news-titles
-export const generateNewsTitlesRoute = createRoute({
-  method: 'post',
-  path: '/generate-news-titles',
-  request: {
-    body: {
-      content: {
-        'application/json': {
-          schema: BaseAIRequestSchema,
-        },
-      },
-      description: 'Prompt for generating news titles',
-    },
-  },
-  responses: {
-    200: {
-      content: {
-        'application/json': {
-          schema: GenerateTitlesResponseSchema,
-        },
-      },
-      description: 'News titles generated successfully',
-    },
-    400: { description: 'Bad Request', content: { 'application/json': { schema: ErrorSchema } } },
-    401: { description: 'Unauthorized', content: { 'application/json': { schema: ErrorSchema } } },
-    403: { description: 'Forbidden', content: { 'application/json': { schema: ErrorSchema } } },
-    500: { description: 'Internal Server Error', content: { 'application/json': { schema: ErrorSchema } } },
-  },
-  summary: 'Generate news titles',
-  tags: ['AI'],
-});
-
-// POST /gemini/generate-series-titles
-export const generateSeriesTitlesRoute = createRoute({
-  method: 'post',
-  path: '/generate-series-titles',
-  request: {
-    body: {
-      content: {
-        'application/json': {
-          schema: BaseAIRequestSchema,
-        },
-      },
-      description: 'Prompt for generating series titles',
-    },
-  },
-  responses: {
-    200: {
-      content: {
-        'application/json': {
-          schema: GenerateTitlesResponseSchema,
-        },
-      },
-      description: 'Series titles generated successfully',
-    },
-    400: { description: 'Bad Request', content: { 'application/json': { schema: ErrorSchema } } },
-    401: { description: 'Unauthorized', content: { 'application/json': { schema: ErrorSchema } } },
-    403: { description: 'Forbidden', content: { 'application/json': { schema: ErrorSchema } } },
-    500: { description: 'Internal Server Error', content: { 'application/json': { schema: ErrorSchema } } },
-  },
-  summary: 'Generate series titles',
-  tags: ['AI'],
-});
-
-// POST /gemini/generate-article-metadata
+// POST /ai/structured/metadata
 export const generateStructuredMetadataRoute = createRoute({
   method: 'post',
   path: '/structured/metadata',
@@ -322,38 +256,6 @@ export const generateThumbnailImageRoute = createRoute({
   tags: ['AI'],
 });
 
-// POST /gemini/generate-article-image
-export const generateArticleImageRoute = createRoute({
-  method: 'post',
-  path: '/generate-article-image',
-  request: {
-    body: {
-      content: {
-        'application/json': {
-          schema: BaseAIRequestSchema, // Prompt for image generation
-        },
-      },
-      description: 'Prompt for generating an article image',
-    },
-  },
-  responses: {
-    200: {
-      content: {
-        'application/json': {
-          schema: GenerateImageResponseSchema,
-        },
-      },
-      description: 'Article image generated successfully',
-    },
-    400: { description: 'Bad Request', content: { 'application/json': { schema: ErrorSchema } } },
-    401: { description: 'Unauthorized', content: { 'application/json': { schema: ErrorSchema } } },
-    403: { description: 'Forbidden', content: { 'application/json': { schema: ErrorSchema } } },
-    500: { description: 'Internal Server Error', content: { 'application/json': { schema: ErrorSchema } } },
-  },
-  summary: 'Generate an article image',
-  tags: ['AI'],
-});
-
 // POST /gemini/generate-background-music
 export const generateBackgroundMusicRoute = createRoute({
   method: 'post',
@@ -398,10 +300,7 @@ const newRouteConfigs = [
   { route: generateEpisodeScriptRoute, handler: generateEpisodeScriptHandler, requestSchema: GenerateEpisodeScriptRequestSchema },
   { route: generateEpisodeAudioRoute, handler: generateEpisodeAudioHandler, requestSchema: GenerateEpisodeAudioRequestSchema },
   { route: generateThumbnailImageRoute, handler: generateThumbnailImageHandler, requestSchema: BaseAIRequestSchema },
-  { route: generateArticleImageRoute, handler: generateArticleImageHandler, requestSchema: BaseAIRequestSchema },
   { route: generateBackgroundMusicRoute, handler: generateBackgroundMusicHandler, requestSchema: BaseAIRequestSchema },
-  { route: generateNewsTitlesRoute, handler: titlesHandler, requestSchema: BaseAIRequestSchema },
-  { route: generateSeriesTitlesRoute, handler: titlesHandler, requestSchema: BaseAIRequestSchema },
 ];
 
 // Apply middlewares in a loop
@@ -417,9 +316,6 @@ aiRoutes.openapi(generateStructuredMetadataRoute, generateStructuredMetadataHand
 aiRoutes.openapi(generateEpisodeScriptRoute, generateEpisodeScriptHandler);
 aiRoutes.openapi(generateEpisodeAudioRoute, generateEpisodeAudioHandler);
 aiRoutes.openapi(generateThumbnailImageRoute, generateThumbnailImageHandler);
-aiRoutes.openapi(generateArticleImageRoute, generateArticleImageHandler);
 aiRoutes.openapi(generateBackgroundMusicRoute, generateBackgroundMusicHandler);
-aiRoutes.openapi(generateNewsTitlesRoute, titlesHandler);
-aiRoutes.openapi(generateSeriesTitlesRoute, titlesHandler);
 
 export default aiRoutes;
