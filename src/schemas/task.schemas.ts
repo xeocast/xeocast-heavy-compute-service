@@ -4,6 +4,7 @@ import {
   StructuredTitlesResponseSchema,
   StructuredScriptResponseSchema,
   MultiSpeakerSpeechResponseSchema,
+  SingleSpeakerSpeechResponseSchema,
   ImageResponseSchema,
   MusicResponseSchema,
   VideoResponseSchema,
@@ -82,8 +83,8 @@ export const CompletedGenerateScriptTaskSchema = z
   })
   .openapi('CompletedGenerateScriptTask');
 
-// A specific schema for a COMPLETED audio generation task
-export const CompletedGenerateAudioTaskSchema = z
+// A specific schema for a COMPLETED multi-speaker audio generation task
+export const CompletedMultiSpeakerAudioTaskSchema = z
   .object({
     id: z.string().uuid(),
     status: z.literal('COMPLETED'),
@@ -92,7 +93,19 @@ export const CompletedGenerateAudioTaskSchema = z
     input: z.any().optional(),
     result: MultiSpeakerSpeechResponseSchema,
   })
-  .openapi('CompletedGenerateAudioTask');
+  .openapi('CompletedMultiSpeakerAudioTask');
+
+// A specific schema for a COMPLETED single-speaker audio generation task
+export const CompletedSingleSpeakerAudioTaskSchema = z
+  .object({
+    id: z.string().uuid(),
+    status: z.literal('COMPLETED'),
+    createdAt: z.string().datetime(),
+    updatedAt: z.string().datetime(),
+    input: z.any().optional(),
+    result: SingleSpeakerSpeechResponseSchema,
+  })
+  .openapi('CompletedSingleSpeakerAudioTask');
 
 // A specific schema for a COMPLETED image generation task
 export const CompletedGenerateImageTaskSchema = z
@@ -150,7 +163,8 @@ export const TaskUnionSchema = z.union([
   CompletedGenerateArticleTaskSchema,
   CompletedGenerateTitlesTaskSchema,
   CompletedGenerateScriptTaskSchema,
-  CompletedGenerateAudioTaskSchema,
+  CompletedMultiSpeakerAudioTaskSchema,
+  CompletedSingleSpeakerAudioTaskSchema,
   CompletedGenerateImageTaskSchema,
   CompletedGenerateMusicTaskSchema,
   CompletedGenerateVideoTaskSchema,

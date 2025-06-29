@@ -11,7 +11,6 @@ import {
   VideoResponseSchema,
   MultiSpeakerSpeechRequestSchema,
   SingleSpeakerSpeechRequestSchema,
-  SingleSpeakerSpeechResponseSchema,
   StructuredTitlesRequestSchema,
   MusicRequestSchema,
   StructuredMetadataRequestSchema,
@@ -254,20 +253,30 @@ export const singleSpeakerSpeechRoute = createRoute({
     },
   },
   responses: {
-    200: {
+    202: {
       content: {
         'application/json': {
-          schema: SingleSpeakerSpeechResponseSchema,
+          schema: TaskCreationResponseSchema,
         },
       },
-      description: 'Single speaker speech generated successfully',
+      description: 'Single speaker speech generation task created and processing started. The actual audio (SingleSpeakerSpeechResponseSchema) will be available via the task status endpoint once completed.',
+      links: {
+        getTaskStatus: {
+          operationId: 'getTaskStatus',
+          parameters: {
+            taskId: '$response.body#/taskId',
+          },
+          description:
+            'A link to poll the status of the created task. The `taskId` from this response body is used as the `taskId` path parameter in the /tasks/{taskId} endpoint.',
+        },
+      },
     },
     400: { description: 'Bad Request', content: { 'application/json': { schema: ErrorSchema } } },
     401: { description: 'Unauthorized', content: { 'application/json': { schema: ErrorSchema } } },
     403: { description: 'Forbidden', content: { 'application/json': { schema: ErrorSchema } } },
     500: { description: 'Internal Server Error', content: { 'application/json': { schema: ErrorSchema } } },
   },
-  summary: 'Generate single speaker speech',
+  summary: 'Initiate generation of single speaker speech (asynchronous)',
   tags: ['AI'],
 });
 
