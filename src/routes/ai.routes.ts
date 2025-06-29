@@ -11,8 +11,8 @@ import {
   GenerateEpisodeScriptRequestSchema,
   GenerateStructuredTitlesRequestSchema,
   GenerateTitlesResponseSchema,
-  GenerateArticleMetadataRequestSchema,
-  GenerateArticleMetadataResponseSchema,
+  GenerateStructuredMetadataRequestSchema,
+  GenerateStructuredMetadataResponseSchema,
   GenerateImageResponseSchema,
   GenerateMusicResponseSchema,
 
@@ -20,7 +20,7 @@ import {
 import { textHandler } from '../handlers/ai/text.handler.js';
 // New Handlers
 import { titlesHandler } from '../handlers/ai/structured/titles.handler.js';
-import { generateArticleMetadataHandler } from '../handlers/ai/structured/metadata.handler.js';
+import { generateStructuredMetadataHandler } from '../handlers/ai/structured/metadata.handler.js';
 import { generateEpisodeScriptHandler } from '../handlers/ai/structured/script.handler.js';
 import { generateEpisodeAudioHandler } from '../handlers/ai/multi-speaker-speech.js';
 import { generateThumbnailImageHandler } from '../handlers/ai/image.handler.js';
@@ -195,34 +195,34 @@ export const generateSeriesTitlesRoute = createRoute({
 });
 
 // POST /gemini/generate-article-metadata
-export const generateArticleMetadataRoute = createRoute({
+export const generateStructuredMetadataRoute = createRoute({
   method: 'post',
-  path: '/generate-article-metadata',
+  path: '/structured/metadata',
   request: {
     body: {
       content: {
         'application/json': {
-          schema: GenerateArticleMetadataRequestSchema,
+          schema: GenerateStructuredMetadataRequestSchema,
         },
       },
-      description: 'Prompt and article for generating article metadata',
+      description: 'Prompt and article for generating structured metadata',
     },
   },
   responses: {
     200: {
       content: {
         'application/json': {
-          schema: GenerateArticleMetadataResponseSchema,
+          schema: GenerateStructuredMetadataResponseSchema,
         },
       },
-      description: 'Article metadata generated successfully',
+      description: 'Structured metadata generated successfully',
     },
     400: { description: 'Bad Request', content: { 'application/json': { schema: ErrorSchema } } },
     401: { description: 'Unauthorized', content: { 'application/json': { schema: ErrorSchema } } },
     403: { description: 'Forbidden', content: { 'application/json': { schema: ErrorSchema } } },
     500: { description: 'Internal Server Error', content: { 'application/json': { schema: ErrorSchema } } },
   },
-  summary: 'Generate article metadata',
+  summary: 'Generate structured metadata',
   tags: ['AI'],
 });
 
@@ -394,7 +394,7 @@ export const aiRoutes = new OpenAPIHono<{ Variables: {} }>();
 const newRouteConfigs = [
   { route: GenerateStructuredTitlesRoute, handler: titlesHandler, requestSchema: GenerateStructuredTitlesRequestSchema },
   { route: textRoute, handler: textHandler, requestSchema: TextRequestSchema },
-  { route: generateArticleMetadataRoute, handler: generateArticleMetadataHandler, requestSchema: GenerateArticleMetadataRequestSchema },
+  { route: generateStructuredMetadataRoute, handler: generateStructuredMetadataHandler, requestSchema: GenerateStructuredMetadataRequestSchema },
   { route: generateEpisodeScriptRoute, handler: generateEpisodeScriptHandler, requestSchema: GenerateEpisodeScriptRequestSchema },
   { route: generateEpisodeAudioRoute, handler: generateEpisodeAudioHandler, requestSchema: GenerateEpisodeAudioRequestSchema },
   { route: generateThumbnailImageRoute, handler: generateThumbnailImageHandler, requestSchema: BaseAIRequestSchema },
@@ -413,7 +413,7 @@ newRouteConfigs.forEach(({ route, requestSchema }) => {
 // Define OpenAPI routes individually for type safety
 aiRoutes.openapi(GenerateStructuredTitlesRoute, titlesHandler);
 aiRoutes.openapi(textRoute, textHandler);
-aiRoutes.openapi(generateArticleMetadataRoute, generateArticleMetadataHandler);
+aiRoutes.openapi(generateStructuredMetadataRoute, generateStructuredMetadataHandler);
 aiRoutes.openapi(generateEpisodeScriptRoute, generateEpisodeScriptHandler);
 aiRoutes.openapi(generateEpisodeAudioRoute, generateEpisodeAudioHandler);
 aiRoutes.openapi(generateThumbnailImageRoute, generateThumbnailImageHandler);

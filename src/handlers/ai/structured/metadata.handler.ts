@@ -1,20 +1,20 @@
 import { z } from 'zod';
 import type { Context } from 'hono';
 import {
-  GenerateArticleMetadataRequestSchema,
-  GenerateArticleMetadataResponseSchema,
+  GenerateStructuredMetadataRequestSchema,
+  GenerateStructuredMetadataResponseSchema,
 } from '../../../schemas/ai.schemas.js';
-import { generateArticleMetadataRoute } from '../../../routes/ai.routes.js';
+import { generateStructuredMetadataRoute } from '../../../routes/ai.routes.js';
 import { GoogleGenAI, Type } from '@google/genai';
 
-export const generateArticleMetadataHandler = async (
+export const generateStructuredMetadataHandler = async (
   c: Context<
     { Variables: {} },
-    typeof generateArticleMetadataRoute.path,
-    { out: { json: z.infer<typeof GenerateArticleMetadataRequestSchema> } }
+    typeof generateStructuredMetadataRoute.path,
+    { out: { json: z.infer<typeof GenerateStructuredMetadataRequestSchema> } }
   >
 ) => {
-  const validatedBody = (c.req as any).valid('json') as z.infer<typeof GenerateArticleMetadataRequestSchema>;
+  const validatedBody = (c.req as any).valid('json') as z.infer<typeof GenerateStructuredMetadataRequestSchema>;
 
   if (!validatedBody) {
     return c.json({ error: 'Invalid request body' }, 400);
@@ -81,7 +81,7 @@ export const generateArticleMetadataHandler = async (
     return c.json({ error: 'Generated metadata is not valid JSON' }, 500);
   }
 
-  const response: z.infer<typeof GenerateArticleMetadataResponseSchema> = {
+  const response: z.infer<typeof GenerateStructuredMetadataResponseSchema> = {
     result: parsedResult,
     status: 'success',
   };

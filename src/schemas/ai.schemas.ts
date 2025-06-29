@@ -93,13 +93,13 @@ export const GenerateStructuredTitlesRequestSchema = z.object({
 }).openapi('GenerateStructuredTitlesRequest');
 
 // --- Specific Schemas for GenerateArticleMetadata ---
-export const GenerateArticleMetadataRequestSchema = z.object({
+export const GenerateStructuredMetadataRequestSchema = z.object({
   prompt: z.string().min(1, { message: 'Prompt cannot be empty' }),
   article: z.string().min(1, { message: 'Article content cannot be empty' }),
   model: z.string().optional(),
-}).openapi('GenerateArticleMetadataRequest');
+}).openapi('GenerateStructuredMetadataRequest');
 
-export const GenerateArticleMetadataResponseSchema = z.object({
+export const GenerateStructuredMetadataResponseSchema = z.object({
   result: z.object({
     description: z.string(),
     tags: z.array(z.string()),
@@ -107,7 +107,7 @@ export const GenerateArticleMetadataResponseSchema = z.object({
     articleImagePrompt: z.string(),
   }),
   status: z.string(),
-}).openapi('GenerateArticleMetadataResponse');
+}).openapi('GenerateStructuredMetadataResponse');
 
 // POST /gemini/generate-intro-music
 export const generateIntroMusicRoute = createRoute({
