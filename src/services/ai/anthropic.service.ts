@@ -20,3 +20,15 @@ export async function generateVideoWithClaude(taskId: string, prompt: string, re
     console.log(`Task ${taskId}: Generating video with Claude for prompt: ${prompt}, model: ${requestedModel}`);
     updateTask(taskId, 'FAILED', { error: { message: 'Claude video generation not yet implemented' } });
 }
+
+export async function generateMusicWithAnthropic(taskId: string, prompt: string, requestedModel?: string) {
+    console.log(`Task ${taskId}: Generating music with Anthropic for prompt: ${prompt}, model: ${requestedModel}`);
+    // Placeholder for actual music generation logic
+    const audioUrl = `https://example.com/generated-music-${taskId}.mp3`;
+
+    const resultPayload = {
+      audioUrl: audioUrl,
+      status: 'success',
+    };
+    updateTask(taskId, 'COMPLETED', { result: resultPayload });
+}

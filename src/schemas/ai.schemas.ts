@@ -40,6 +40,12 @@ export const ImageRequestSchema = BaseAIRequestSchema.extend({
   provider: z.enum(['google', 'xai', 'openai', 'anthropic']).optional().default('google'),
 }).openapi('ImageRequest');
 
+export const MusicRequestSchema = BaseAIRequestSchema.extend({
+  provider: z.enum(['google', 'xai', 'openai', 'anthropic']).optional().default('google'),
+}).openapi('MusicRequest');
+
+export type InferredMusicRequest = z.infer<typeof MusicRequestSchema>;
+
 export type InferredImageRequest = z.infer<typeof ImageRequestSchema>;
 
 export const BaseAIResponseSchema = z.object({

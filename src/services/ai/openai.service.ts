@@ -20,3 +20,15 @@ export async function generateVideoWithGPT(taskId: string, prompt: string, reque
     console.log(`Task ${taskId}: Generating video with OpenAI for prompt: ${prompt}, model: ${requestedModel}`);
     updateTask(taskId, 'FAILED', { error: { message: 'OpenAI video generation not yet implemented' } });
 }
+
+export async function generateMusicWithOpenAI(taskId: string, prompt: string, requestedModel?: string) {
+    console.log(`Task ${taskId}: Generating music with OpenAI for prompt: ${prompt}, model: ${requestedModel}`);
+    // Placeholder for actual music generation logic
+    const audioUrl = `https://example.com/generated-music-${taskId}.mp3`;
+
+    const resultPayload = {
+      audioUrl: audioUrl,
+      status: 'success',
+    };
+    updateTask(taskId, 'COMPLETED', { result: resultPayload });
+}
