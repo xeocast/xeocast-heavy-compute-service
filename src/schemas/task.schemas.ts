@@ -170,20 +170,7 @@ export const TaskUnionSchema = z.union([
   StructuredScriptResponseCompletedTaskSchema,
   FailedTaskSchema,
 ]).openapi('Task');
-
-
-// This is the old generic TaskSchema, we keep it for the task service internal type.
-export const TaskSchema = z.object({
-  id: z.string().uuid(),
-  status: TaskStatusSchema,
-  createdAt: z.string().datetime(),
-  updatedAt: z.string().datetime(),
-  input: z.any().optional(),
-  result: z.any().optional(),
-  error: z.any().optional(),
-});
-export type Task = z.infer<typeof TaskSchema>;
-
+export type TaskUnion = z.infer<typeof TaskUnionSchema>;
 
 // --- Route-related Schemas ---
 
@@ -205,7 +192,7 @@ export const GetTaskResponseSchema = TaskUnionSchema; // Use the union schema he
 export type GetTaskResponse = z.infer<typeof GetTaskResponseSchema>;
 
 // Schema for listing all tasks
-export const ListTasksResponseSchema = z.array(TaskSchema); // Listing can remain generic
+export const ListTasksResponseSchema = z.array(TaskUnionSchema); // Listing can remain generic
 export type ListTasksResponse = z.infer<typeof ListTasksResponseSchema>;
 
 
