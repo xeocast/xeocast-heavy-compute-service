@@ -17,7 +17,8 @@ if (process.env.NODE_ENV !== 'production') {
 
 // CORS Middleware
 app.use('*', cors({
-  origin: '*', // Allow requests from any origin
+  origin: process.env.NODE_ENV === 'production' ? ['https://dash.xeocast.com', 'https://dash.xeopub.com'] : ['http://localhost:8080', 'http://localhost:8081'],
+  credentials: true,
   allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowHeaders: ['Content-Type', 'Authorization', 'Accept'],
 }));
@@ -54,7 +55,7 @@ app.get('/doc/ui', swaggerUI({ url: '/doc' }));
 app.onError((err, c) => {
   console.error(`Unhandled error: ${err.message}`, err.stack);
   // Set CORS headers for error responses
-  c.header('Access-Control-Allow-Origin', '*');
+  c.header('Access-Control-Allow-Origin', process.env.NODE_ENV === 'production' ? 'https://dash.xeocast.com, https://dash.xeopub.com' : 'http://localhost:8080, http://localhost:8081');
   c.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Accept');
   if (err instanceof HTTPException) {
     return c.json({ error: err.message }, err.status as any);
