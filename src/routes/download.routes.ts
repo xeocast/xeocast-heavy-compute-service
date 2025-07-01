@@ -4,7 +4,7 @@ import {
   DownloadXPackagePathParamsSchema,
   DownloadXPackageResponseSchema
 } from '../schemas/download.schemas.js';
-import { downloadXPackageHandler } from '../handlers/downloads/download-x-package.handler.js';
+import { downloadXPackageHandler, CloudflareEnv } from '../handlers/downloads/download-x-package.handler.js';
 import { cookieAuth } from '../middlewares/auth.js';
 
 // GET /downloads/x-package/{id}
@@ -28,7 +28,7 @@ export const downloadXPackageRoute = createRoute({
   },
 });
 
-const downloadRoutes = new OpenAPIHono<{ Variables: {} }>();
+const downloadRoutes = new OpenAPIHono<{ Bindings: CloudflareEnv }>();
 
 downloadRoutes.use(downloadXPackageRoute.path, cookieAuth);
 downloadRoutes.openapi(downloadXPackageRoute, downloadXPackageHandler);
