@@ -7,8 +7,8 @@ import {
   MultiSpeakerSpeechResponseSchema,
   MusicResponseSchema,
   StructuredTitlesResponseSchema,
-  StructuredScriptResponseSchema,
   StructuredMetadataResponseSchema,
+  StructuredScriptResponseSchema,
 } from './ai.schemas.js';
 
 // --- Base Task Schemas ---
@@ -31,6 +31,7 @@ export const PendingTaskSchema = z
     input: z.any().optional().openapi({ description: 'The original input that started the task.' }),
   })
   .openapi('PendingTask');
+export type PendingTask = z.infer<typeof PendingTaskSchema>;
 
 // A generic schema for a failed task
 export const FailedTaskSchema = z
@@ -43,7 +44,7 @@ export const FailedTaskSchema = z
     error: z.object({ message: z.string() }).optional(),
   })
   .openapi('FailedTask');
-
+export type FailedTask = z.infer<typeof FailedTaskSchema>;
 
 // --- Completed Task Schemas with Specific Results ---
 

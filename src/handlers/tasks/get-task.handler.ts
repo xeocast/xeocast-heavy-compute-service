@@ -3,6 +3,7 @@ import type { RouteConfigToTypedResponse } from '@hono/zod-openapi';
 import { getTaskById } from '../../services/task.service.js';
 import {
   GetTaskPathParams,
+  GetTaskResponse,
 } from '../../schemas/task.schemas.js';
 import { getTaskRoute } from '../../routes/task.routes.js';
 
@@ -28,5 +29,5 @@ export const getTaskHandler = async (
   // This allows the OpenAPI docs to correctly show the linked schemas and all
   // possible result structures, even though the runtime object from our simple
   // task service is a more generic shape.
-  return c.json(task as any, 200);
+  return c.json(task as GetTaskResponse, 200);
 };
