@@ -25,7 +25,7 @@ import { generateMusicHandler } from '../handlers/ai/music.handler.js';
 import { generateStructuredTitlesHandler } from '../handlers/ai/structured/titles.handler.js';
 import { generateStructuredMetadataHandler } from '../handlers/ai/structured/metadata.handler.js';
 import { generateStructuredScriptHandler } from '../handlers/ai/structured/script.handler.js';
-import { bearerAuth } from '../middlewares/auth.js';
+import { cookieAuth } from '../middlewares/auth.js';
 
 // POST /ai/text
 export const textRoute = createRoute({
@@ -488,7 +488,7 @@ const newRouteConfigs = [
 
 // Apply middlewares in a loop
 newRouteConfigs.forEach(({ route, requestSchema }) => {
-  aiRoutes.use(route.path, bearerAuth);
+  aiRoutes.use(route.path, cookieAuth);
   aiRoutes.use(route.path, zValidator('json', requestSchema));
 });
 

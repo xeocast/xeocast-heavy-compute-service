@@ -1,33 +1,38 @@
 import { Context, Next } from 'hono';
 import { HTTPException } from 'hono/http-exception';
+import { ContentfulStatusCode } from 'hono/utils/http-status';
 
-export const bearerAuth = async (c: Context, next: Next) => {
-  const authHeader = c.req.header('Authorization');
-  // Prioritize c.env (e.g., Cloudflare Workers), fallback to process.env (Node.js)
-  const EXPECTED_BEARER_TOKEN = c.env?.BEARER_TOKEN ?? process.env.BEARER_TOKEN;
+export const cookieAuth = async (c: Context, next: Next) => {
+  const primaryApiUrl = c.env?.PRIMARY_API_URL ?? process.env.PRIMARY_API_URL ?? 'https://dash-api.xeocast.com';
+  const sessionEndpoint = `${primaryApiUrl}/auth/session`;
 
-  if (!EXPECTED_BEARER_TOKEN) {
-    console.error('BEARER_TOKEN is not configured in the environment.');
-    // Do not throw HTTPException here as it might expose internal config issues.
-    // Let the request proceed to be caught by a general 500 error if this is critical,
-    // or handle as a specific auth failure if token presence is strictly part of the auth logic.
-    // For this case, we'll treat it as a misconfiguration leading to auth failure.
-    throw new HTTPException(500, { message: 'Authentication mechanism not configured.' });
+  const cookieHeader = c.req.header('Cookie');
+
+  if (!cookieHeader) {
+    throw new HTTPException(401, { message: 'Unauthorized: Missing Cookie header' });
   }
 
-  if (!authHeader) {
-    throw new HTTPException(401, { message: 'Unauthorized: Missing Authorization header' });
+  try {
+    const response = await fetch(sessionEndpoint, {
+      method: 'GET',
+      headers: {
+        'Cookie': cookieHeader,
+      },
+    });
+
+    if (!response.ok) {
+      // If the session endpoint returns an error, propagate it
+      const errorText = await response.text();
+      throw new HTTPException(response.status as ContentfulStatusCode, { message: `Authentication failed: ${errorText}` });
+    }
+
+    // If the session is valid, proceed
+    await next();
+  } catch (error) {
+    console.error('Error during session validation:', error);
+    if (error instanceof HTTPException) {
+      throw error; // Re-throw if it's already an HTTPException
+    }
+    throw new HTTPException(500, { message: 'Internal server error during authentication' });
   }
-
-  const [scheme, token] = authHeader.split(' ');
-
-  if (scheme !== 'Bearer' || !token) {
-    throw new HTTPException(401, { message: 'Unauthorized: Invalid token format. Expected Bearer token.' });
-  }
-
-  if (token !== EXPECTED_BEARER_TOKEN) {
-    throw new HTTPException(403, { message: 'Forbidden: Invalid token' });
-  }
-
-  await next();
 };

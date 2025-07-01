@@ -8,7 +8,7 @@ import {
 } from '../schemas/task.schemas.js';
 import { getTaskHandler } from '../handlers/tasks/get-task.handler.js';
 import { listTasksHandler } from '../handlers/tasks/list-tasks.handler.js';
-import { bearerAuth } from '../middlewares/auth.js';
+import { cookieAuth } from '../middlewares/auth.js';
 
 // --- Route Definitions ---
 
@@ -64,11 +64,11 @@ export const getTaskRoute = createRoute({
 const taskRoutes = new OpenAPIHono<{ Variables: {} }>();
 
 // GET /tasks - List all tasks
-taskRoutes.use(listTasksRoute.path, bearerAuth);
+taskRoutes.use(listTasksRoute.path, cookieAuth);
 taskRoutes.openapi(listTasksRoute, listTasksHandler);
 
 // GET /tasks/{taskId} - Get task status
-taskRoutes.use(getTaskRoute.path, bearerAuth);
+taskRoutes.use(getTaskRoute.path, cookieAuth);
 taskRoutes.openapi(getTaskRoute, getTaskHandler);
 
 export default taskRoutes;
