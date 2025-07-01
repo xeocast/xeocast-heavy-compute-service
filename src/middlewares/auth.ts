@@ -3,8 +3,12 @@ import { HTTPException } from 'hono/http-exception';
 import { ContentfulStatusCode } from 'hono/utils/http-status';
 
 export const cookieAuth = async (c: Context, next: Next) => {
-  const primaryApiUrl = c.env?.PRIMARY_API_URL ?? process.env.PRIMARY_API_URL ?? 'https://dash-api.xeocast.com';
-  const sessionEndpoint = `${primaryApiUrl}/auth/session`;
+  if (!process.env.DASH_API_URL) {
+    throw new HTTPException(500, { message: 'DASH_API_URL environment variable is not set' });
+  }
+
+  const dashApiUrl = process.env.DASH_API_URL;
+  const sessionEndpoint = `${dashApiUrl}/auth/session`;
 
   const cookieHeader = c.req.header('Cookie');
 
