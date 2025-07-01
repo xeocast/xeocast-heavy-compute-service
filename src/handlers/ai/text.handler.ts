@@ -1,9 +1,7 @@
-import { z } from 'zod';
 import type { Context } from 'hono'; // Use base Hono Context due to @hono/zod-openapi type resolution issues
 import type { RouteConfigToTypedResponse } from '@hono/zod-openapi';
 import {
-  TextRequestSchema,
-  type InferredTextRequest,
+  type TextRequest,
 } from '../../schemas/ai.schemas.js';
 import { createTask, updateTask } from '../../services/task.service.js';
 import { generateTextWithGemini } from '../../services/ai/google/text.service.js';
@@ -13,10 +11,10 @@ export const generateTextHandler = async (
   c: Context<
     { Variables: {} }, // Environment type, can be more specific if needed
     typeof textRoute.path, // Path from your route definition
-    { out: { json: InferredTextRequest } } // Use the explicit type alias for input
+    { out: { json: TextRequest } } // Use the explicit type alias for input
   >
 ): Promise<RouteConfigToTypedResponse<typeof textRoute>> => {
-  const validatedBody = (c.req as any).valid('json') as z.infer<typeof TextRequestSchema>;
+  const validatedBody = (c.req as any).valid('json') as TextRequest;
 
   if (!validatedBody) {
     return c.json({ error: 'Invalid request body' }, 400) as any;

@@ -1,5 +1,7 @@
 import { GoogleGenAI } from "@google/genai";
+import { z } from 'zod';
 import { updateTask } from "../../task.service.js";
+import { TextResponseSchema } from "../../../schemas/ai.schemas.js";
 
 export async function generateTextWithGemini(taskId: string, prompt: string, requestedModel?: string) {
   try {
@@ -24,9 +26,10 @@ export async function generateTextWithGemini(taskId: string, prompt: string, req
       updateTask(taskId, 'FAILED', { error: { message: 'Failed to generate content - text is null or undefined' } });
       return;
     }
+    
 
-    const resultPayload = {
-      generatedText: generatedText,
+    const resultPayload: z.infer<typeof TextResponseSchema> = {
+      text: generatedText,
       status: 'success',
     };
     updateTask(taskId, 'COMPLETED', { result: resultPayload });

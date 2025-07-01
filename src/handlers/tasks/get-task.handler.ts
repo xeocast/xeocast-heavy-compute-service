@@ -1,9 +1,8 @@
-import { z } from 'zod';
 import { Context } from 'hono';
 import type { RouteConfigToTypedResponse } from '@hono/zod-openapi';
 import { getTaskById } from '../../services/task.service.js';
 import {
-  GetTaskPathParamsSchema,
+  GetTaskPathParams,
 } from '../../schemas/task.schemas.js';
 import { getTaskRoute } from '../../routes/task.routes.js';
 
@@ -11,7 +10,7 @@ export const getTaskHandler = async (
   c: Context<
     { Variables: {} },
     typeof getTaskRoute.path,
-    { out: { param: z.infer<typeof GetTaskPathParamsSchema> } }
+    { out: { param: GetTaskPathParams } }
   >
 ): Promise<RouteConfigToTypedResponse<typeof getTaskRoute>> => {
   const { taskId } = c.req.valid('param');

@@ -1,5 +1,6 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { updateTask } from "../../task.service.js";
+import { StructuredMetadataResponse } from "../../../schemas/ai.schemas.js";
 
 export async function generateStructuredMetadataWithGemini(taskId: string, prompt: string, article: string, requestedModel?: string) {
   try {
@@ -63,8 +64,8 @@ export async function generateStructuredMetadataWithGemini(taskId: string, promp
       return;
     }
 
-    const resultPayload = {
-      result: parsedResult,
+    const resultPayload: StructuredMetadataResponse = {
+      metadata: parsedResult,
       status: 'success',
     };
     updateTask(taskId, 'COMPLETED', { result: resultPayload });

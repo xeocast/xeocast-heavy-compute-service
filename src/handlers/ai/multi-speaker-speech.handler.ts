@@ -3,7 +3,7 @@ import type { Context } from 'hono';
 import type { RouteConfigToTypedResponse } from '@hono/zod-openapi';
 import {
   MultiSpeakerSpeechRequestSchema,
-  type InferredMultiSpeakerSpeechRequest,
+  type MultiSpeakerSpeechRequest,
   // GenerateMultiSpeakerSpeechResponseSchema is used for the task's result structure
 } from '../../schemas/ai.schemas.js';
 import { createTask, updateTask } from '../../services/task.service.js';
@@ -14,7 +14,7 @@ export const generateMultiSpeakerSpeechHandler = async (
   c: Context<
     { Variables: {} },
     typeof multiSpeakerSpeechRoute.path,
-    { out: { json: InferredMultiSpeakerSpeechRequest } }
+    { out: { json: MultiSpeakerSpeechRequest } }
   >
 ): Promise<RouteConfigToTypedResponse<typeof multiSpeakerSpeechRoute>> => {
   const validatedBody = (c.req as any).valid('json') as z.infer<typeof MultiSpeakerSpeechRequestSchema>;

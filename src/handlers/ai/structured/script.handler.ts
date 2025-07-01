@@ -1,7 +1,7 @@
 import type { Context } from 'hono'; // Use base Hono Context
 import type { RouteConfigToTypedResponse } from '@hono/zod-openapi';
 import {
-  type InferredStructuredScriptRequest,
+  type StructuredScriptRequest,
 } from '../../../schemas/ai.schemas.js';
 import { structuredScriptRoute } from '../../../routes/ai.routes.js';
 import { createTask, updateTask } from '../../../services/task.service.js';
@@ -11,10 +11,10 @@ export const generateStructuredScriptHandler = async (
   c: Context<
     { Variables: {} }, // Environment type
     typeof structuredScriptRoute.path, // Path from route definition
-    { out: { json: InferredStructuredScriptRequest } } // Input type for validation
+    { out: { json: StructuredScriptRequest } } // Input type for validation
   >
 ): Promise<RouteConfigToTypedResponse<typeof structuredScriptRoute>> => {
-  const validatedBody = (c.req as any).valid('json') as InferredStructuredScriptRequest;
+  const validatedBody = (c.req as any).valid('json') as StructuredScriptRequest;
 
   if (!validatedBody) {
     return c.json({ error: 'Invalid request body' }, 400) as any;

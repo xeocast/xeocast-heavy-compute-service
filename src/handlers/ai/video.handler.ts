@@ -1,9 +1,7 @@
-import { z } from 'zod';
 import type { Context } from 'hono';
 import type { RouteConfigToTypedResponse } from '@hono/zod-openapi';
 import {
-  VideoRequestSchema,
-  type InferredVideoRequest,
+  type VideoRequest,
 } from '../../schemas/ai.schemas.js';
 import { createTask, updateTask } from '../../services/task.service.js';
 import { generateVideoWithGemini } from '../../services/ai/google/video.service.js';
@@ -13,10 +11,10 @@ export const generateVideoHandler = async (
   c: Context<
     { Variables: {} },
     typeof videoRoute.path,
-    { out: { json: InferredVideoRequest } }
+    { out: { json: VideoRequest } }
   >
 ): Promise<RouteConfigToTypedResponse<typeof videoRoute>> => {
-  const validatedBody = (c.req as any).valid('json') as z.infer<typeof VideoRequestSchema>;
+  const validatedBody = (c.req as any).valid('json') as VideoRequest;
 
   if (!validatedBody) {
     return c.json({ error: 'Invalid request body' }, 400) as any;

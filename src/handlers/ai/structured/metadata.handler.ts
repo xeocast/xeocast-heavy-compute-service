@@ -1,7 +1,7 @@
 import type { Context } from 'hono';
 import type { RouteConfigToTypedResponse } from '@hono/zod-openapi';
 import {
-  InferredStructuredMetadataRequest,
+  StructuredMetadataRequest,
 } from '../../../schemas/ai.schemas.js';
 import { structuredMetadataRoute } from '../../../routes/ai.routes.js';
 import { createTask, updateTask } from '../../../services/task.service.js';
@@ -11,10 +11,10 @@ export const generateStructuredMetadataHandler = async (
   c: Context<
     { Variables: {} },
     typeof structuredMetadataRoute.path,
-    { out: { json: InferredStructuredMetadataRequest } }
+    { out: { json: StructuredMetadataRequest } }
   >
 ): Promise<RouteConfigToTypedResponse<typeof structuredMetadataRoute>> => {
-  const validatedBody = (c.req as any).valid('json') as InferredStructuredMetadataRequest;
+  const validatedBody = (c.req as any).valid('json') as StructuredMetadataRequest;
 
   if (!validatedBody) {
     return c.json({ error: 'Invalid request body' }, 400) as any;

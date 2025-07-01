@@ -1,9 +1,7 @@
-import { z } from 'zod';
 import type { Context } from 'hono';
 import type { RouteConfigToTypedResponse } from '@hono/zod-openapi';
 import {
-  MusicRequestSchema,
-  type InferredMusicRequest,
+  type MusicRequest,
 } from '../../schemas/ai.schemas.js';
 import { createTask, updateTask } from '../../services/task.service.js';
 import { musicRoute } from '../../routes/ai.routes.js';
@@ -13,10 +11,10 @@ export const generateMusicHandler = async (
   c: Context<
     { Variables: {} },
     typeof musicRoute.path,
-    { out: { json: InferredMusicRequest } }
+    { out: { json: MusicRequest } }
   >
 ): Promise<RouteConfigToTypedResponse<typeof musicRoute>> => {
-  const validatedBody = (c.req as any).valid('json') as z.infer<typeof MusicRequestSchema>;
+  const validatedBody = (c.req as any).valid('json') as MusicRequest;
 
   if (!validatedBody) {
     return c.json({ error: 'Invalid request body' }, 400) as any;

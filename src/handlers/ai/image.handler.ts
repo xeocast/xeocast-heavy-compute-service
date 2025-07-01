@@ -1,7 +1,7 @@
 import type { Context } from 'hono';
 import type { RouteConfigToTypedResponse } from '@hono/zod-openapi';
 import {
-  InferredImageRequest,
+  ImageRequest,
 } from '../../schemas/ai.schemas.js';
 import { createTask, updateTask } from '../../services/task.service.js';
 import { generateImageWithGemini } from '../../services/ai/google/image.service.js';
@@ -11,10 +11,10 @@ export const generateImageHandler = async (
   c: Context<
     { Variables: {} },
     typeof imageRoute.path,
-    { out: { json: InferredImageRequest } }
+    { out: { json: ImageRequest } }
   >
 ): Promise<RouteConfigToTypedResponse<typeof imageRoute>> => {
-  const validatedBody = (c.req as any).valid('json') as InferredImageRequest;
+  const validatedBody = (c.req as any).valid('json') as ImageRequest;
 
   if (!validatedBody) {
     return c.json({ error: 'Invalid request body' }, 400) as any;

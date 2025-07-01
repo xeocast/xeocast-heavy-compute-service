@@ -1,14 +1,14 @@
 import { z } from 'zod';
 import {
   TextResponseSchema,
+  ImageResponseSchema,
+  VideoResponseSchema,
+  SingleSpeakerSpeechResponseSchema,
+  MultiSpeakerSpeechResponseSchema,
+  MusicResponseSchema,
   StructuredTitlesResponseSchema,
   StructuredScriptResponseSchema,
-  MultiSpeakerSpeechResponseSchema,
-  SingleSpeakerSpeechResponseSchema,
-  ImageResponseSchema,
-  MusicResponseSchema,
-  VideoResponseSchema,
-  BaseAIResponseSchema,
+  StructuredMetadataResponseSchema,
 } from './ai.schemas.js';
 
 // --- Base Task Schemas ---
@@ -48,7 +48,7 @@ export const FailedTaskSchema = z
 // --- Completed Task Schemas with Specific Results ---
 
 // A specific schema for a COMPLETED article generation task
-export const CompletedGenerateArticleTaskSchema = z
+export const TextResponseCompletedTaskSchema = z
   .object({
     id: z.string().uuid(),
     status: z.literal('COMPLETED'),
@@ -57,58 +57,10 @@ export const CompletedGenerateArticleTaskSchema = z
     input: z.any().optional(),
     result: TextResponseSchema, // <-- Embed the specific result schema
   })
-  .openapi('CompletedGenerateArticleTask');
-
-// A specific schema for a COMPLETED titles generation task
-export const CompletedGenerateTitlesTaskSchema = z
-  .object({
-    id: z.string().uuid(),
-    status: z.literal('COMPLETED'),
-    createdAt: z.string().datetime(),
-    updatedAt: z.string().datetime(),
-    input: z.any().optional(),
-    result: StructuredTitlesResponseSchema,
-  })
-  .openapi('CompletedGenerateTitlesTask');
-
-// A specific schema for a COMPLETED script generation task
-export const CompletedGenerateScriptTaskSchema = z
-  .object({
-    id: z.string().uuid(),
-    status: z.literal('COMPLETED'),
-    createdAt: z.string().datetime(),
-    updatedAt: z.string().datetime(),
-    input: z.any().optional(),
-    result: StructuredScriptResponseSchema,
-  })
-  .openapi('CompletedGenerateScriptTask');
-
-// A specific schema for a COMPLETED multi-speaker audio generation task
-export const CompletedMultiSpeakerAudioTaskSchema = z
-  .object({
-    id: z.string().uuid(),
-    status: z.literal('COMPLETED'),
-    createdAt: z.string().datetime(),
-    updatedAt: z.string().datetime(),
-    input: z.any().optional(),
-    result: MultiSpeakerSpeechResponseSchema,
-  })
-  .openapi('CompletedMultiSpeakerAudioTask');
-
-// A specific schema for a COMPLETED single-speaker audio generation task
-export const CompletedSingleSpeakerAudioTaskSchema = z
-  .object({
-    id: z.string().uuid(),
-    status: z.literal('COMPLETED'),
-    createdAt: z.string().datetime(),
-    updatedAt: z.string().datetime(),
-    input: z.any().optional(),
-    result: SingleSpeakerSpeechResponseSchema,
-  })
-  .openapi('CompletedSingleSpeakerAudioTask');
+  .openapi('TextResponseCompletedTaskSchema');
 
 // A specific schema for a COMPLETED image generation task
-export const CompletedGenerateImageTaskSchema = z
+export const ImageResponseCompletedTaskSchema = z
   .object({
     id: z.string().uuid(),
     status: z.literal('COMPLETED'),
@@ -117,21 +69,10 @@ export const CompletedGenerateImageTaskSchema = z
     input: z.any().optional(),
     result: ImageResponseSchema,
   })
-  .openapi('CompletedGenerateImageTask');
+  .openapi('ImageResponseCompletedTaskSchema');
 
-// A specific schema for a COMPLETED music generation task
-export const CompletedGenerateMusicTaskSchema = z
-  .object({
-    id: z.string().uuid(),
-    status: z.literal('COMPLETED'),
-    createdAt: z.string().datetime(),
-    updatedAt: z.string().datetime(),
-    input: z.any().optional(),
-    result: MusicResponseSchema,
-  })
-  .openapi('CompletedGenerateMusicTask');
-
-export const CompletedGenerateVideoTaskSchema = z
+// A specific schema for a COMPLETED video generation task
+export const VideoResponseCompletedTaskSchema = z
   .object({
     id: z.string().uuid(),
     status: z.literal('COMPLETED'),
@@ -140,35 +81,94 @@ export const CompletedGenerateVideoTaskSchema = z
     input: z.any().optional(),
     result: VideoResponseSchema,
   })
-  .openapi('CompletedGenerateVideoTask');
+  .openapi('VideoResponseCompletedTaskSchema');
 
-// A specific schema for other completed Gemini tasks
-export const CompletedBaseGeminiTaskSchema = z
+// A specific schema for a COMPLETED single-speaker audio generation task
+export const SingleSpeakerSpeechResponseCompletedTaskSchema = z
   .object({
     id: z.string().uuid(),
     status: z.literal('COMPLETED'),
     createdAt: z.string().datetime(),
     updatedAt: z.string().datetime(),
     input: z.any().optional(),
-    result: BaseAIResponseSchema,
+    result: SingleSpeakerSpeechResponseSchema,
   })
-  .openapi('CompletedBaseGeminiTask');
+  .openapi('SingleSpeakerSpeechResponseCompletedTaskSchema');
 
+// A specific schema for a COMPLETED multi-speaker audio generation task
+export const MultiSpeakerSpeechResponseCompletedTaskSchema = z
+  .object({
+    id: z.string().uuid(),
+    status: z.literal('COMPLETED'),
+    createdAt: z.string().datetime(),
+    updatedAt: z.string().datetime(),
+    input: z.any().optional(),
+    result: MultiSpeakerSpeechResponseSchema,
+  })
+  .openapi('MultiSpeakerSpeechResponseCompletedTaskSchema');
+
+// A specific schema for a COMPLETED music generation task
+export const MusicResponseCompletedTaskSchema = z
+  .object({
+    id: z.string().uuid(),
+    status: z.literal('COMPLETED'),
+    createdAt: z.string().datetime(),
+    updatedAt: z.string().datetime(),
+    input: z.any().optional(),
+    result: MusicResponseSchema,
+  })
+  .openapi('MusicResponseCompletedTaskSchema');
+
+// A specific schema for a COMPLETED titles generation task
+export const StructuredTitlesResponseCompletedTaskSchema = z
+  .object({
+    id: z.string().uuid(),
+    status: z.literal('COMPLETED'),
+    createdAt: z.string().datetime(),
+    updatedAt: z.string().datetime(),
+    input: z.any().optional(),
+    result: StructuredTitlesResponseSchema,
+  })
+  .openapi('StructuredTitlesResponseCompletedTaskSchema');
+
+// A specific schema for a COMPLETED metadata generation task
+export const StructuredMetadataResponseCompletedTaskSchema = z
+  .object({
+    id: z.string().uuid(),
+    status: z.literal('COMPLETED'),
+    createdAt: z.string().datetime(),
+    updatedAt: z.string().datetime(),
+    input: z.any().optional(),
+    result: StructuredMetadataResponseSchema,
+  })
+  .openapi('StructuredMetadataResponseCompletedTaskSchema');
+
+// A specific schema for a COMPLETED script generation task
+export const StructuredScriptResponseCompletedTaskSchema = z
+  .object({
+    id: z.string().uuid(),
+    status: z.literal('COMPLETED'),
+    createdAt: z.string().datetime(),
+    updatedAt: z.string().datetime(),
+    input: z.any().optional(),
+    result: StructuredScriptResponseSchema,
+  })
+  .openapi('StructuredScriptResponseCompletedTaskSchema');
 
 // A union of all possible task states for the polling endpoint.
 // z.union() is translated to `oneOf` in the OpenAPI spec.
 export const TaskUnionSchema = z.union([
   PendingTaskSchema,
+  TextResponseCompletedTaskSchema,
+  ImageResponseCompletedTaskSchema,
+  VideoResponseCompletedTaskSchema,
+  SingleSpeakerSpeechResponseCompletedTaskSchema,
+  MultiSpeakerSpeechResponseCompletedTaskSchema,
+  MusicResponseCompletedTaskSchema,
+  StructuredTitlesResponseCompletedTaskSchema,
+  StructuredMetadataResponseCompletedTaskSchema,
+  StructuredScriptResponseCompletedTaskSchema,
   FailedTaskSchema,
-  CompletedGenerateArticleTaskSchema,
-  CompletedGenerateTitlesTaskSchema,
-  CompletedGenerateScriptTaskSchema,
-  CompletedMultiSpeakerAudioTaskSchema,
-  CompletedSingleSpeakerAudioTaskSchema,
-  CompletedGenerateImageTaskSchema,
-  CompletedGenerateMusicTaskSchema,
-  CompletedGenerateVideoTaskSchema,
-  CompletedBaseGeminiTaskSchema,
 ]).openapi('Task');
 
 
@@ -199,6 +199,7 @@ export const GetTaskPathParamsSchema = z.object({
     .uuid()
     .openapi({ param: { name: 'taskId', in: 'path' }, example: '123e4567-e89b-12d3-a456-426614174000' }),
 });
+export type GetTaskPathParams = z.infer<typeof GetTaskPathParamsSchema>;
 
 export const GetTaskResponseSchema = TaskUnionSchema; // Use the union schema here
 export type GetTaskResponse = z.infer<typeof GetTaskResponseSchema>;

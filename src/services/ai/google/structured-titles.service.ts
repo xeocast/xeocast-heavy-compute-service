@@ -1,5 +1,7 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { updateTask } from "../../task.service.js";
+import { StructuredTitlesResponseSchema } from "../../../schemas/ai.schemas.js";
+import z from "zod";
 
 export async function generateStructuredTitlesWithGemini(taskId: string, prompt: string, requestedModel?: string) {
     try {
@@ -53,8 +55,8 @@ export async function generateStructuredTitlesWithGemini(taskId: string, prompt:
         return;
       }
   
-      const resultPayload = {
-        result: parsedResult,
+      const resultPayload: z.infer<typeof StructuredTitlesResponseSchema> = {
+        titles: parsedResult,
         status: 'success',
       };
       updateTask(taskId, 'COMPLETED', { result: resultPayload });
