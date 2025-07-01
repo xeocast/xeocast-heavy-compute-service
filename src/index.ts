@@ -1,6 +1,7 @@
 import { OpenAPIHono } from '@hono/zod-openapi';
 import { cors } from 'hono/cors';
 import { swaggerUI } from '@hono/swagger-ui';
+import { logger } from 'hono/logger';
 import aiRoutes from './routes/ai.routes.js';
 import taskRoutes from './routes/task.routes.js';
 import { HTTPException } from 'hono/http-exception';
@@ -8,6 +9,11 @@ import { HTTPException } from 'hono/http-exception';
 import 'dotenv/config';
 
 const app = new OpenAPIHono();
+
+// Logger Middleware
+if (process.env.NODE_ENV !== 'production') {
+  app.use(logger());
+}
 
 // CORS Middleware
 app.use('*', cors({
@@ -47,6 +53,9 @@ app.get('/doc/ui', swaggerUI({ url: '/doc' }));
 // Custom Error Handler
 app.onError((err, c) => {
   console.error(`Unhandled error: ${err.message}`, err.stack);
+  // Set CORS headers for error responses
+  c.header('Access-Control-Allow-Origin', '*');
+  c.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Accept');
   if (err instanceof HTTPException) {
     return c.json({ error: err.message }, err.status as any);
   }
