@@ -1,14 +1,18 @@
 import { z } from 'zod';
 
+// -- X Package Download --
+
 export const DownloadXPackagePathParamsSchema = z.object({
-  id: z.string().openapi({ param: { name: 'id', in: 'path' }, example: 'some-package-id' }),
+  id: z.string().openapi({ param: { name: 'id', in: 'path' }, example: 'some-episode-id' }),
 });
 export type DownloadXPackagePathParams = z.infer<typeof DownloadXPackagePathParamsSchema>;
 
-export const DownloadXPackageResponseSchema = z.object({
-  message: z.string(),
+// -- YouTube Package Download --
+
+export const DownloadYouTubePackagePathParamsSchema = z.object({
+  id: z.string().openapi({ param: { name: 'id', in: 'path' }, example: 'some-episode-id' }),
 });
-export type DownloadXPackageResponse = z.infer<typeof DownloadXPackageResponseSchema>;
+export type DownloadYouTubePackagePathParams = z.infer<typeof DownloadYouTubePackagePathParamsSchema>;
 
 // -- Related Schemas --
 
