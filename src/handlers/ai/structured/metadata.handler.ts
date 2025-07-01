@@ -24,11 +24,9 @@ export const generateStructuredMetadataHandler = async (
 
   const taskId = createTask({ prompt, article, model: requestedModel, provider });
 
-  c.executionCtx.waitUntil(processAndCompleteTask());
+  c.res = c.json({ taskId: taskId, message: "Metadata generation task created and processing started." }, 202);
 
-  return c.json({ taskId: taskId, message: "Metadata generation task created and processing started." }, 202);
-
-  async function processAndCompleteTask() {
+  const processAndCompleteTask = async () => {
     try {
       updateTask(taskId, 'PROCESSING');
 
