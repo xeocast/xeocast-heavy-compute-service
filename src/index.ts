@@ -4,6 +4,7 @@ import { swaggerUI } from '@hono/swagger-ui';
 import { logger } from 'hono/logger';
 import aiRoutes from './routes/ai.routes.js';
 import taskRoutes from './routes/task.routes.js';
+import downloadRoutes from './routes/download.routes.js';
 import { HTTPException } from 'hono/http-exception';
 
 import 'dotenv/config';
@@ -33,6 +34,7 @@ app.get('/', (c) => {
 // e.g., /ai/text
 app.route('/ai', aiRoutes);
 app.route('/tasks', taskRoutes);
+app.route('/downloads', downloadRoutes);
 
 // OpenAPI Specification Route
 app.doc('/doc', {
