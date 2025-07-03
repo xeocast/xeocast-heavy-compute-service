@@ -183,7 +183,7 @@ export const downloadXPackageHandler = async (
             if (youtubePlatformId) {
                 const videoId = await findVideoIdByTitle(youtubePlatformId, episodeInfo.episodeTitle);
                 if (videoId) {
-                    const commentText = `You can also listen to this podcast episode on YouTube\n\nhttps://www.youtube.com/watch?v=${videoId}`;
+                    const commentText = `🚀 NEW EPISODE: "${episodeInfo.episodeTitle}" is here! 🎧\n\nCheck out the latest discussion on "${episodeInfo.seriesTitle}" from the show "${episodeInfo.showName}".\n\nAlso available on YouTube\n\nhttps://www.youtube.com/watch?v=${videoId}`;
                     filesToZip['first-comment.txt'] = strToU8(commentText);
                 }
             }
